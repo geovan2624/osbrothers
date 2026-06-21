@@ -464,7 +464,7 @@
             return name.trim().toLowerCase().replace(/[^a-z0-9_]/g, '');
         };
 
-        // Upload para o Catbox.moe com sua Chave
+        // Upload para o Catbox.moe com sua Chave via Proxy (Burlar CORS)
         async function uploadToCatbox(file) {
             const formData = new FormData();
             formData.append('reqtype', 'fileupload');
@@ -472,7 +472,11 @@
             formData.append('userhash', '307daba6918600198381c9952');
 
             try {
-                const response = await fetch('https://catbox.moe/user/api.php', {
+                // Proxy CORS público para intermediar e ignorar o bloqueio do navegador
+                const targetUrl = 'https://catbox.moe/user/api.php';
+                const proxyUrl = 'https://corsproxy.io/?' + encodeURIComponent(targetUrl);
+
+                const response = await fetch(proxyUrl, {
                     method: 'POST',
                     body: formData
                 });
