@@ -5,16 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Os Brothers</title>
     
-    <!-- Tailwind CSS para estilização rápida e responsiva -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Phosphor Icons para ícones modernos e elegantes -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    
-    <!-- Google Fonts: Inter -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
 
-    <!-- Configuração do Tailwind -->
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -22,23 +16,24 @@
                 extend: {
                     fontFamily: { sans: ['Inter', 'sans-serif'] },
                     colors: {
-                        brand: {
-                            dark: '#0a0a0f',
-                            card: 'rgba(255, 255, 255, 0.03)',
-                            border: 'rgba(255, 255, 255, 0.08)',
-                            primary: '#9333ea', // Purple
-                            secondary: '#ec4899', // Pink
+                        osb: {
+                            black: '#000000',
+                            dark: '#121212',
+                            surface: '#1E1E1E',
+                            border: '#333333',
+                            gray: '#B3B3B3',
+                            white: '#FFFFFF',
+                            green: '#1ED760', // Verde vibrante
+                            greenHover: '#1db954'
                         }
                     },
                     animation: {
-                        'fade-in': 'fadeIn 0.3s ease-out',
-                        'slide-up': 'slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
-                        'pulse-glow': 'pulseGlow 2s infinite',
+                        'fade-in': 'fadeIn 0.2s ease-out',
+                        'slide-up': 'slideUp 0.3s ease-out',
                     },
                     keyframes: {
                         fadeIn: { '0%': { opacity: '0' }, '100%': { opacity: '1' } },
-                        slideUp: { '0%': { opacity: '0', transform: 'translateY(20px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } },
-                        pulseGlow: { '0%, 100%': { boxShadow: '0 0 15px rgba(147, 51, 234, 0.3)' }, '50%': { boxShadow: '0 0 30px rgba(147, 51, 234, 0.6)' } }
+                        slideUp: { '0%': { opacity: '0', transform: 'translateY(10px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } },
                     }
                 }
             }
@@ -46,290 +41,276 @@
     </script>
 
     <style>
-        /* Estilos Globais e Otimizações Mobile */
         body {
-            background-color: #050505;
-            background-image: 
-                radial-gradient(circle at 15% 50%, rgba(147, 51, 234, 0.15), transparent 25%),
-                radial-gradient(circle at 85% 30%, rgba(236, 72, 153, 0.1), transparent 25%);
-            color: #ffffff;
+            background-color: #000000;
+            color: #FFFFFF;
             -webkit-tap-highlight-color: transparent;
             overscroll-behavior-y: none;
-        }
-
-        /* Container Principal: Estilo App no Desktop, Full no Mobile */
-        .app-container {
-            width: 100%;
+            margin: 0;
             height: 100dvh;
             display: flex;
             flex-direction: column;
-            position: relative;
-            background-color: rgba(10, 10, 15, 0.6);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
         }
 
-        @media (min-width: 640px) {
-            body {
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                min-height: 100vh;
-            }
-            .app-container {
-                max-width: 420px;
-                height: 850px;
-                max-height: 95vh;
-                border-radius: 2.5rem;
-                border: 6px solid #1a1a24;
-                box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 40px rgba(147, 51, 234, 0.15);
-                overflow: hidden;
-            }
+        /* Layout Responsivo: PC (Sidebar) vs Mobile (Bottom Nav) */
+        @media (min-width: 768px) {
+            body { flex-direction: row; }
+            #bottom-nav { display: none !important; }
+            #side-nav { display: flex !important; }
+            .main-content-wrapper { padding-left: 16rem; /* Largura do sidebar */ }
         }
 
-        /* Efeitos Visuais - Glassmorphism */
-        .glass-panel {
-            background: var(--tw-colors-brand-card, rgba(255,255,255,0.03));
-            border: 1px solid var(--tw-colors-brand-border, rgba(255,255,255,0.08));
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
+        /* Scrollbar customizada minimalista */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #000000; }
+        ::-webkit-scrollbar-thumb { background: #333333; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #1ED760; }
+
+        /* Utilitários de Views */
+        .view-section { display: none; opacity: 0; }
+        .view-section.active { display: flex; opacity: 1; animation: fadeIn 0.3s forwards; }
+
+        /* Componentes Customizados */
+        .btn-primary {
+            background-color: #1ED760;
+            color: #000000;
+            font-weight: 700;
+            transition: all 0.2s;
         }
+        .btn-primary:hover { background-color: #1db954; transform: scale(1.02); }
+        .btn-primary:active { transform: scale(0.98); }
 
-        .text-gradient {
-            background: linear-gradient(to right, #c084fc, #ec4899);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+        .btn-outline {
+            background-color: transparent;
+            border: 2px solid #FFFFFF;
+            color: #FFFFFF;
+            font-weight: 700;
+            transition: all 0.2s;
         }
+        .btn-outline:hover { border-color: #1ED760; color: #1ED760; }
+        .btn-outline:active { transform: scale(0.98); }
 
-        /* Scrollbar customizada */
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 4px; }
+        .card {
+            background-color: #121212;
+            border: 1px solid #333333;
+            border-radius: 1rem;
+            transition: border-color 0.2s;
+        }
+        .card:hover { border-color: #1ED760; }
 
-        /* Ocultar views inativas */
-        .view-section { display: none; }
-        .view-section.active { display: flex; animation: slideUp 0.3s ease-out forwards; }
-
-        /* Utilitários */
         .pb-safe { padding-bottom: env(safe-area-inset-bottom, 20px); }
-        .pt-safe { padding-top: env(safe-area-inset-top, 20px); }
     </style>
 </head>
-<body class="antialiased selection:bg-purple-500/30">
+<body class="antialiased selection:bg-osb-green selection:text-black">
 
-    <div class="app-container">
-        
-        <!-- Header Fixo -->
-        <header id="main-header" class="hidden shrink-0 items-center justify-between p-5 z-50 glass-panel border-b-0 border-x-0 border-t-0 border-b border-white/5 pt-safe relative">
-            <h1 class="text-xl font-black text-gradient flex items-center gap-2 tracking-tight">
-                <i class="ph-fill ph-users-three text-2xl text-purple-400"></i>
-                Os Brothers
-            </h1>
-            <div id="header-profile" class="flex items-center gap-2">
-                <!-- Avatar inserido via JS -->
+    <nav id="side-nav" class="hidden w-64 bg-osb-black border-r border-osb-border fixed h-full flex-col py-6 px-4 z-50">
+        <div class="flex items-center gap-3 mb-10 px-2">
+            <i class="ph-fill ph-users-three text-3xl text-osb-green"></i>
+            <h1 class="text-xl font-black uppercase tracking-widest text-osb-white">Os Brothers</h1>
+        </div>
+
+        <div class="flex flex-col gap-2 flex-1">
+            <a href="#/inicio" class="nav-item flex items-center gap-3 px-4 py-3 rounded-lg text-osb-gray hover:text-osb-white hover:bg-osb-surface transition-colors" data-route="#/inicio">
+                <i class="ph-bold ph-house text-xl"></i> <span class="font-bold">Início</span>
+            </a>
+            <a href="#/buscar" class="nav-item flex items-center gap-3 px-4 py-3 rounded-lg text-osb-gray hover:text-osb-white hover:bg-osb-surface transition-colors" data-route="#/buscar">
+                <i class="ph-bold ph-magnifying-glass text-xl"></i> <span class="font-bold">Buscar</span>
+            </a>
+            <a href="#/ppp-lobby" class="nav-item flex items-center gap-3 px-4 py-3 rounded-lg text-osb-gray hover:text-osb-white hover:bg-osb-surface transition-colors" data-route="#/ppp">
+                <i class="ph-bold ph-play text-xl"></i> <span class="font-bold">P.P.P. Game</span>
+            </a>
+            <a href="#/catbotox" class="nav-item flex items-center gap-3 px-4 py-3 rounded-lg text-osb-gray hover:text-osb-white hover:bg-osb-surface transition-colors" data-route="#/catbotox">
+                <i class="ph-bold ph-robot text-xl"></i> <span class="font-bold">Catbotox</span>
+            </a>
+        </div>
+
+        <div id="desktop-profile" class="mt-auto pt-6 border-t border-osb-border px-2 flex items-center gap-3 hidden">
+            <img id="desk-avatar" src="" class="w-10 h-10 rounded-full border border-osb-border">
+            <div class="flex flex-col overflow-hidden">
+                <span id="desk-name" class="font-bold text-sm truncate">Brother</span>
+                <button onclick="logout()" class="text-xs text-osb-gray hover:text-osb-green text-left">Sair</button>
             </div>
+        </div>
+    </nav>
+
+    <div class="flex-1 flex flex-col h-full relative main-content-wrapper md:pl-64">
+        
+        <!-- Header Mobile -->
+        <header id="mobile-header" class="md:hidden flex items-center justify-between p-4 border-b border-osb-border bg-osb-black/90 backdrop-blur-md sticky top-0 z-40">
+            <h1 class="text-lg font-black uppercase tracking-widest flex items-center gap-2">
+                <i class="ph-fill ph-users-three text-osb-green"></i> Os Brothers
+            </h1>
+            <img id="mobile-avatar" src="" class="w-8 h-8 rounded-full border border-osb-border hidden">
         </header>
 
-        <!-- Área de Conteúdo Rolável -->
-        <main id="main-content" class="flex-1 overflow-y-auto overflow-x-hidden relative">
+        <main id="main-content" class="flex-1 overflow-y-auto w-full max-w-5xl mx-auto p-4 md:p-8">
             
-            <!-- VIEW: Tela de Carregamento -->
-            <section id="view-loading" class="view-section active flex-col items-center justify-center h-full">
-                <i class="ph-duotone ph-spinner-gap text-5xl text-purple-500 animate-spin mb-4"></i>
-                <h2 class="text-xl font-bold text-gray-300 tracking-widest uppercase text-sm">Conectando...</h2>
+            <section id="view-loading" class="view-section active flex-col items-center justify-center h-[80vh]">
+                <i class="ph-bold ph-circle-notch text-4xl text-osb-green animate-spin mb-4"></i>
+                <h2 class="font-bold text-osb-gray tracking-widest uppercase text-sm">Carregando Sistema...</h2>
             </section>
 
-            <!-- VIEW: Setup de Perfil e Login -->
-            <section id="view-auth" class="view-section flex-col p-6 min-h-full justify-center">
-                <div class="text-center mb-8 animate-slide-up">
-                    <div class="w-24 h-24 mx-auto bg-gradient-to-br from-purple-600/20 to-pink-600/20 rounded-full flex items-center justify-center mb-6 border border-purple-500/30">
-                        <i class="ph-fill ph-users-three text-5xl text-purple-400"></i>
-                    </div>
-                    <h2 class="text-3xl font-black mb-2">Bem-vindo aos <br><span class="text-gradient">Brothers</span></h2>
-                    <p class="text-gray-400 text-sm">A resenha oficial da galera.</p>
+            <section id="view-auth" class="view-section flex-col items-center justify-center min-h-[80vh] max-w-md mx-auto text-center w-full">
+                <i class="ph-fill ph-users-three text-6xl text-osb-green mb-6"></i>
+                <h2 class="text-3xl font-black mb-2 uppercase">Acesso Restrito</h2>
+                <p class="text-osb-gray text-sm mb-10">Identifique-se para entrar na resenha.</p>
+
+                <div class="w-full card p-6 text-left mb-6">
+                    <label class="block text-xs font-bold text-osb-gray uppercase tracking-wider mb-2">Seu Vulgo</label>
+                    <input type="text" id="auth-name-input" placeholder="Como te chamam?" class="w-full bg-osb-black border border-osb-border rounded-lg p-3 text-osb-white focus:outline-none focus:border-osb-green transition-colors mb-4">
+                    
+                    <button id="btn-join-group" class="w-full btn-primary py-3 rounded-lg flex items-center justify-center gap-2">
+                        Entrar <i class="ph-bold ph-arrow-right"></i>
+                    </button>
                 </div>
 
-                <div class="space-y-4 animate-slide-up" style="animation-delay: 0.1s;">
-                    <div class="glass-panel p-6 rounded-3xl">
-                        <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Seu Vulgo / Apelido</label>
-                        <input type="text" id="auth-name-input" placeholder="Como te chamam?" class="w-full bg-black/40 border border-white/10 rounded-2xl p-4 text-white placeholder-gray-600 focus:outline-none focus:border-purple-500 transition-colors mb-4">
-                        
-                        <button id="btn-join-group" class="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:opacity-90 py-4 rounded-2xl font-bold shadow-[0_0_20px_rgba(147,51,234,0.3)] transition-all active:scale-95 text-white flex items-center justify-center gap-2">
-                            Entrar no Grupo <i class="ph-bold ph-arrow-right"></i>
+                <div class="flex items-center gap-4 w-full mb-6">
+                    <div class="h-px bg-osb-border flex-1"></div>
+                    <span class="text-osb-gray text-xs font-bold uppercase">Ou</span>
+                    <div class="h-px bg-osb-border flex-1"></div>
+                </div>
+
+                <button id="btn-google-login" class="w-full bg-osb-white text-osb-black py-3 rounded-lg font-bold flex items-center justify-center gap-3 hover:bg-gray-200 transition-colors active:scale-95">
+                    <i class="ph-bold ph-google-logo text-xl"></i>
+                    Entrar com Google
+                </button>
+            </section>
+
+            <section id="view-home" class="view-section flex-col gap-8 w-full">
+                <div class="flex items-end justify-between">
+                    <div>
+                        <p class="text-osb-gray uppercase tracking-widest text-xs font-bold mb-1">Bem-vindo de volta,</p>
+                        <h2 class="text-3xl font-black text-osb-white" id="home-user-name">Brother</h2>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-sm font-bold text-osb-gray uppercase tracking-widest mb-4 border-b border-osb-border pb-2">Central de Comando</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <button onclick="navigate('#/ppp-lobby')" class="card p-6 flex flex-col items-start gap-4 text-left group">
+                            <div class="w-12 h-12 bg-osb-surface rounded-full flex items-center justify-center group-hover:bg-osb-green transition-colors">
+                                <i class="ph-fill ph-play text-2xl group-hover:text-osb-black text-osb-white transition-colors"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-lg">P.P.P.</h4>
+                                <p class="text-osb-gray text-sm mt-1">Pega, Passa ou Pensa. Crie uma sala e julgue seus amigos.</p>
+                            </div>
+                        </button>
+
+                        <button onclick="navigate('#/catbotox')" class="card p-6 flex flex-col items-start gap-4 text-left group">
+                            <div class="w-12 h-12 bg-osb-surface rounded-full flex items-center justify-center group-hover:bg-osb-green transition-colors">
+                                <i class="ph-fill ph-robot text-2xl group-hover:text-osb-black text-osb-white transition-colors"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-lg">Catbotox</h4>
+                                <p class="text-osb-gray text-sm mt-1">A inteligência artificial do grupo.</p>
+                            </div>
                         </button>
                     </div>
+                </div>
 
-                    <div class="flex items-center gap-4 py-2">
-                        <div class="h-px bg-white/10 flex-1"></div>
-                        <span class="text-gray-500 text-xs font-bold uppercase tracking-widest">OU</span>
-                        <div class="h-px bg-white/10 flex-1"></div>
+                <div class="card p-6">
+                    <div class="flex items-center gap-3 mb-4">
+                        <i class="ph-fill ph-push-pin text-xl text-osb-green"></i>
+                        <h3 class="font-bold text-lg">Mural de Avisos</h3>
                     </div>
-
-                    <button id="btn-google-login" class="w-full bg-white text-black py-4 rounded-2xl font-bold flex items-center justify-center gap-3 active:scale-95 transition-all">
-                        <svg class="w-5 h-5" viewBox="0 0 24 24">
-                            <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
-                            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
-                            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
-                            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
-                        </svg>
-                        Entrar com Google
-                    </button>
+                    <p class="text-osb-gray">A lista de novidades e os logs do grupo aparecerão aqui na próxima versão.</p>
                 </div>
             </section>
 
-            <!-- VIEW: Início (Home) -->
-            <section id="view-home" class="view-section flex-col p-5 pb-24 gap-6">
-                <!-- Cartão de Boas Vindas -->
-                <div class="glass-panel p-5 rounded-3xl flex items-center gap-4 relative overflow-hidden">
-                    <div class="absolute -right-4 -top-4 w-24 h-24 bg-purple-500/20 blur-2xl rounded-full"></div>
-                    <img id="home-user-avatar" src="" alt="Avatar" class="w-16 h-16 rounded-2xl border-2 border-purple-500/50 object-cover shadow-lg z-10">
-                    <div class="z-10">
-                        <h2 class="text-xl font-bold text-white">E aí, <span id="home-user-name" class="text-purple-400">Brother</span>!</h2>
-                        <p class="text-gray-400 text-sm">Pronto pra resenha de hoje?</p>
-                    </div>
-                </div>
-
-                <h3 class="text-xs font-bold text-gray-500 uppercase tracking-widest pl-2">Atividades Rápidas</h3>
-                
-                <div class="grid grid-cols-2 gap-4">
-                    <!-- Botão PPP -->
-                    <button onclick="navigate('#/ppp-lobby')" class="glass-panel p-5 rounded-3xl flex flex-col items-center justify-center gap-4 hover:bg-white/5 transition-colors active:scale-95 group border-pink-500/20">
-                        <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-pink-500/20 to-purple-500/20 flex items-center justify-center group-hover:scale-110 transition-transform">
-                            <i class="ph-fill ph-play-circle text-3xl text-pink-400"></i>
-                        </div>
-                        <span class="font-bold text-sm tracking-wide">Jogar P.P.P.</span>
-                    </button>
-
-                    <!-- Botão Catbotox -->
-                    <button onclick="navigate('#/catbotox')" class="glass-panel p-5 rounded-3xl flex flex-col items-center justify-center gap-4 hover:bg-white/5 transition-colors active:scale-95 group border-orange-500/20">
-                        <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-orange-500/20 to-red-500/20 flex items-center justify-center group-hover:scale-110 transition-transform">
-                            <i class="ph-fill ph-robot text-3xl text-orange-400"></i>
-                        </div>
-                        <span class="font-bold text-sm tracking-wide">Catbotox</span>
-                    </button>
-                </div>
-
-                <!-- Mural Placeholder -->
-                <div class="glass-panel rounded-3xl p-6 relative overflow-hidden mt-2 border-blue-500/20">
-                    <div class="absolute -left-4 -bottom-4 w-32 h-32 bg-blue-500/10 blur-3xl rounded-full"></div>
-                    <div class="relative z-10">
-                        <h3 class="font-bold text-lg mb-2 flex items-center gap-2">
-                            <i class="ph-fill ph-push-pin text-blue-400 text-xl"></i>
-                            Mural dos Brothers
-                        </h3>
-                        <p class="text-gray-400 text-sm leading-relaxed">O espaço para postar as pérolas e os prints das conversas de madrugada vai entrar na próxima atualização. Fica ligado!</p>
-                    </div>
-                </div>
-            </section>
-
-            <!-- VIEW: Buscar (Placeholder) -->
-            <section id="view-search" class="view-section flex-col p-5 pb-24 items-center justify-center h-full text-center gap-4">
-                <div class="w-20 h-20 bg-gray-800/50 rounded-full flex items-center justify-center mb-2">
-                    <i class="ph-duotone ph-magnifying-glass text-4xl text-gray-500"></i>
-                </div>
+            <section id="view-search" class="view-section flex-col items-center justify-center h-[60vh] text-center w-full">
+                <i class="ph-bold ph-magnifying-glass text-6xl text-osb-border mb-4"></i>
                 <h2 class="font-bold text-xl">Buscar Brothers</h2>
-                <p class="text-gray-500 text-sm">A lista completa de participantes será liberada em breve.</p>
+                <p class="text-osb-gray mt-2 max-w-sm">O diretório de membros está sendo compilado e será liberado em breve.</p>
             </section>
 
-            <!-- VIEW: Catbotox -->
-            <section id="view-catbotox" class="view-section flex-col p-5 pb-24 h-full gap-4">
-                <div class="glass-panel p-4 rounded-2xl flex items-center gap-4 border-orange-500/30 bg-orange-500/5">
-                    <div class="w-12 h-12 rounded-xl bg-orange-500/20 flex items-center justify-center">
-                        <i class="ph-fill ph-robot text-2xl text-orange-400"></i>
-                    </div>
+            <section id="view-catbotox" class="view-section flex-col gap-4 h-[80vh] w-full">
+                <div class="card p-4 flex items-center gap-4">
+                    <i class="ph-fill ph-robot text-3xl text-osb-green"></i>
                     <div>
-                        <h2 class="font-bold text-orange-400">Inteligência Catbotox</h2>
-                        <p class="text-xs text-orange-300/70 font-mono">ID: 307daba6918600198381c9952</p>
+                        <h2 class="font-bold">Terminal Catbotox</h2>
+                        <p class="text-xs text-osb-gray font-mono">ID: 307daba6918600198381c9952</p>
                     </div>
                 </div>
                 
-                <div class="flex-1 glass-panel rounded-3xl flex flex-col items-center justify-center p-6 text-center border-dashed border-2 border-white/10">
-                    <i class="ph-duotone ph-code text-5xl text-gray-600 mb-4"></i>
-                    <p class="text-gray-400 text-sm leading-relaxed">
-                        Interface Nativada do Chatbotox.
-                        <br><br>
-                        <span class="text-xs text-gray-500 block max-w-[250px] mx-auto">
-                            Para ativar de verdade, insira o <code>&lt;script&gt;</code> do Chatbase/Catbotox neste container no código HTML final.
-                        </span>
+                <div class="flex-1 card flex flex-col items-center justify-center p-6 text-center border-dashed border-2 border-osb-border">
+                    <i class="ph-bold ph-terminal-window text-4xl text-osb-gray mb-4"></i>
+                    <p class="text-osb-gray">
+                        Interface do bot preparada.<br>
+                        <span class="text-xs mt-2 block">Insira o script do iframe/chatbase diretamente no arquivo HTML neste container.</span>
                     </p>
                 </div>
             </section>
 
-            <!-- VIEW: PPP Lobby (Criar Sala) -->
-            <section id="view-ppp-lobby" class="view-section flex-col p-5 pb-24 gap-6">
-                <div class="text-center mt-4">
-                    <h2 class="text-4xl font-black bg-gradient-to-r from-pink-500 to-purple-500 bg-clip-text text-transparent">P.P.P.</h2>
-                    <p class="text-gray-400 tracking-[0.2em] text-[10px] font-bold mt-1 uppercase">Pega, Passa ou Pensa</p>
+            <section id="view-ppp-lobby" class="view-section flex-col gap-6 w-full max-w-2xl mx-auto">
+                <div class="text-center mb-6">
+                    <h2 class="text-5xl font-black tracking-tighter">P.P.P.</h2>
+                    <p class="text-osb-green font-bold tracking-widest uppercase text-xs mt-2">Pega, Passa ou Pensa</p>
                 </div>
 
-                <div class="glass-panel p-6 rounded-3xl shadow-[0_10px_40px_rgba(0,0,0,0.5)] border-purple-500/20 relative overflow-hidden">
-                    <div class="absolute top-0 right-0 w-32 h-32 bg-purple-500/10 blur-2xl rounded-full pointer-events-none"></div>
+                <div class="card p-6 md:p-8">
+                    <h3 class="font-bold text-xl mb-6">Configurar Nova Sala</h3>
                     
-                    <h3 class="font-bold text-lg mb-6 relative z-10">Configurar Nova Sala</h3>
-                    
-                    <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 relative z-10">Tempo por pessoa (segundos)</label>
-                    <div class="grid grid-cols-3 gap-2 mb-8 relative z-10" id="ppp-time-selectors">
-                        <button onclick="selectPppTime(10)" class="ppp-time-btn py-3 rounded-2xl font-bold bg-white/5 border border-white/10 text-gray-400 transition-all active:scale-95" data-time="10">10s</button>
-                        <button onclick="selectPppTime(15)" class="ppp-time-btn py-3 rounded-2xl font-bold bg-purple-600 border border-purple-500 text-white shadow-[0_0_15px_rgba(147,51,234,0.4)] transition-all active:scale-95" data-time="15">15s</button>
-                        <button onclick="selectPppTime(30)" class="ppp-time-btn py-3 rounded-2xl font-bold bg-white/5 border border-white/10 text-gray-400 transition-all active:scale-95" data-time="30">30s</button>
+                    <label class="block text-xs font-bold text-osb-gray uppercase tracking-wider mb-3">Tempo por rodada</label>
+                    <div class="grid grid-cols-3 gap-3 mb-8" id="ppp-time-selectors">
+                        <button onclick="selectPppTime(10)" class="ppp-time-btn py-3 rounded-lg font-bold border border-osb-border text-osb-gray hover:border-osb-green transition-colors" data-time="10">10s</button>
+                        <button onclick="selectPppTime(15)" class="ppp-time-btn py-3 rounded-lg font-bold bg-osb-green text-osb-black border border-osb-green transition-colors" data-time="15">15s</button>
+                        <button onclick="selectPppTime(30)" class="ppp-time-btn py-3 rounded-lg font-bold border border-osb-border text-osb-gray hover:border-osb-green transition-colors" data-time="30">30s</button>
                     </div>
 
-                    <button id="btn-create-ppp" class="w-full py-4 bg-gradient-to-r from-pink-600 to-purple-600 hover:opacity-90 rounded-2xl font-bold text-white shadow-lg transition-transform active:scale-95 flex justify-center items-center gap-2 relative z-10">
-                        Criar Sala VIP <i class="ph-fill ph-play text-xl"></i>
+                    <button id="btn-create-ppp" class="w-full btn-primary py-4 rounded-lg text-lg flex justify-center items-center gap-2">
+                        Criar Sala <i class="ph-bold ph-play"></i>
                     </button>
                 </div>
 
-                <div class="flex items-start gap-4 text-sm text-gray-400 glass-panel p-5 rounded-3xl">
-                    <i class="ph-duotone ph-info text-3xl text-blue-400 shrink-0"></i>
-                    <p class="leading-relaxed text-xs">Crie a sala, defina o tempo e envie o link no grupo. O jogo é como Stop: o tempo corre e todo mundo tem que votar rápido na foto da pessoa da rodada!</p>
+                <div class="flex gap-4 text-sm text-osb-gray card p-4 bg-transparent border-dashed">
+                    <i class="ph-fill ph-info text-2xl text-osb-gray shrink-0"></i>
+                    <p>Crie a sala e envie o link para a galera. Em cada rodada, uma pessoa do grupo aparece e os outros votam anonimamente. O tempo é curto!</p>
                 </div>
             </section>
 
-            <!-- VIEW: PPP Room (Sala Ativa) -->
-            <section id="view-ppp-room" class="view-section flex-col p-5 pb-24 h-full relative">
-                <button onclick="navigate('#/ppp-lobby')" class="absolute top-5 left-5 z-20 flex items-center gap-2 text-gray-400 hover:text-white bg-black/50 px-3 py-1.5 rounded-full backdrop-blur-md border border-white/10 text-sm font-medium transition-colors">
-                    <i class="ph-bold ph-arrow-left"></i> Sair
-                </button>
+            <section id="view-ppp-room" class="view-section flex-col h-[85vh] w-full max-w-3xl mx-auto relative">
+                <div class="flex justify-between items-center mb-4">
+                    <button onclick="navigate('#/ppp-lobby')" class="text-osb-gray hover:text-osb-white flex items-center gap-2 text-sm font-bold uppercase tracking-widest transition-colors">
+                        <i class="ph-bold ph-arrow-left"></i> Sair
+                    </button>
+                    <span class="text-xs font-mono text-osb-border" id="room-id-display"></span>
+                </div>
 
                 <!-- Container Dinâmico da Sala -->
-                <div id="ppp-dynamic-container" class="w-full flex-1 flex flex-col mt-12">
-                    <!-- Conteúdo injetado via JS (Waiting, Playing, Finished) -->
+                <div id="ppp-dynamic-container" class="w-full flex-1 flex flex-col">
+                    <!-- Conteúdo injetado via JS -->
                 </div>
             </section>
 
         </main>
-
-        <!-- Navegação Inferior Fixa (Mobile/Desktop) -->
-        <nav id="bottom-nav" class="hidden shrink-0 bg-brand-dark/80 backdrop-blur-xl border-t border-white/10 px-6 py-2 pb-safe flex justify-between items-center z-50">
-            <a href="#/inicio" class="nav-item flex flex-col items-center gap-1 p-2 text-gray-500 hover:text-white transition-all w-16" data-route="#/inicio">
-                <i class="ph-fill ph-house text-2xl transition-transform"></i>
-                <span class="text-[9px] font-bold uppercase tracking-widest">Início</span>
-            </a>
-            <a href="#/buscar" class="nav-item flex flex-col items-center gap-1 p-2 text-gray-500 hover:text-white transition-all w-16" data-route="#/buscar">
-                <i class="ph-bold ph-magnifying-glass text-2xl transition-transform"></i>
-                <span class="text-[9px] font-bold uppercase tracking-widest">Buscar</span>
-            </a>
-            <a href="#/ppp-lobby" class="nav-item flex flex-col items-center gap-1 p-2 text-gray-500 hover:text-white transition-all w-16 relative" data-route="#/ppp">
-                <div class="absolute -top-4 bg-gradient-to-tr from-pink-500 to-purple-500 w-12 h-12 rounded-full flex items-center justify-center shadow-[0_0_15px_rgba(236,72,153,0.5)] border-4 border-[#0a0a0f]">
-                    <i class="ph-fill ph-play text-white text-xl ml-1 transition-transform"></i>
-                </div>
-                <span class="text-[9px] font-bold uppercase tracking-widest text-transparent mt-6">PPP</span>
-            </a>
-            <a href="#/catbotox" class="nav-item flex flex-col items-center gap-1 p-2 text-gray-500 hover:text-white transition-all w-16" data-route="#/catbotox">
-                <i class="ph-fill ph-robot text-2xl transition-transform"></i>
-                <span class="text-[9px] font-bold uppercase tracking-widest">Botox</span>
-            </a>
-        </nav>
-
-        <!-- Sistema de Notificações (Toast) -->
-        <div id="toast-container" class="absolute top-20 left-1/2 -translate-x-1/2 z-[100] flex flex-col gap-2 pointer-events-none"></div>
-
     </div>
+
+    <nav id="bottom-nav" class="md:hidden flex bg-osb-black border-t border-osb-border w-full pb-safe fixed bottom-0 z-50">
+        <a href="#/inicio" class="nav-item flex-1 flex flex-col items-center justify-center py-3 text-osb-gray hover:text-osb-white transition-colors" data-route="#/inicio">
+            <i class="ph-fill ph-house text-2xl mb-1"></i>
+            <span class="text-[10px] font-bold uppercase tracking-wider">Início</span>
+        </a>
+        <a href="#/buscar" class="nav-item flex-1 flex flex-col items-center justify-center py-3 text-osb-gray hover:text-osb-white transition-colors" data-route="#/buscar">
+            <i class="ph-bold ph-magnifying-glass text-2xl mb-1"></i>
+            <span class="text-[10px] font-bold uppercase tracking-wider">Buscar</span>
+        </a>
+        <a href="#/ppp-lobby" class="nav-item flex-1 flex flex-col items-center justify-center py-3 text-osb-gray hover:text-osb-white transition-colors" data-route="#/ppp">
+            <i class="ph-fill ph-play text-2xl mb-1"></i>
+            <span class="text-[10px] font-bold uppercase tracking-wider">PPP</span>
+        </a>
+        <a href="#/catbotox" class="nav-item flex-1 flex flex-col items-center justify-center py-3 text-osb-gray hover:text-osb-white transition-colors" data-route="#/catbotox">
+            <i class="ph-fill ph-robot text-2xl mb-1"></i>
+            <span class="text-[10px] font-bold uppercase tracking-wider">Botox</span>
+        </a>
+    </nav>
+
+    <!-- Sistema de Notificações (Toast) -->
+    <div id="toast-container" class="fixed top-4 left-1/2 -translate-x-1/2 z-[100] flex flex-col gap-2 pointer-events-none w-full max-w-sm px-4"></div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, signInAnonymously, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signInWithCustomToken, signOut as firebaseSignOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, getDoc, onSnapshot, updateDoc, arrayUnion, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // --- Configuração Firebase ---
@@ -347,11 +328,10 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // Path helpers baseados nas regras estritas para Canvas/Preview
+        // Path helpers baseados nas regras
         const appIdString = typeof __app_id !== 'undefined' ? __app_id : 'os-brothers';
         const isCanvas = typeof __firebase_config !== 'undefined';
         
-        // Regra 1: strict paths para public data
         function getPublicPath(collectionName) {
             return isCanvas ? `artifacts/${appIdString}/public/data/${collectionName}` : collectionName;
         }
@@ -370,40 +350,34 @@
         window.showToast = (message, type = 'success') => {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
-            const colorClass = type === 'success' ? 'bg-green-500/90' : 'bg-red-500/90';
-            toast.className = `${colorClass} text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg backdrop-blur-md border border-white/20 animate-slide-up transform transition-all`;
-            toast.innerText = message;
+            // Preto e Branco e Verde estrito
+            const borderCol = type === 'success' ? 'border-osb-green text-osb-green' : 'border-osb-white text-osb-white';
+            toast.className = `bg-osb-surface border ${borderCol} px-4 py-3 rounded-lg text-sm font-bold shadow-lg animate-slide-up flex items-center gap-2`;
+            toast.innerHTML = `<i class="ph-bold ${type === 'success' ? 'ph-check' : 'ph-warning'} text-lg"></i> ${message}`;
             container.appendChild(toast);
             setTimeout(() => {
                 toast.style.opacity = '0';
-                toast.style.transform = 'translateY(-10px)';
                 setTimeout(() => toast.remove(), 300);
             }, 3000);
         };
 
-        // --- Sistema de Roteamento (Hash Router) ---
-        window.navigate = (hash) => {
-            window.location.hash = hash;
-        };
+        window.navigate = (hash) => { window.location.hash = hash; };
 
         const renderRoute = () => {
             const hash = window.location.hash || '#/inicio';
             
-            // Controle de visibilidade padrão
-            let showHeader = false;
-            let showNav = false;
-            
-            // Ocultar todas as seções
             document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
 
             if (!window.globalState.profile && hash !== '#/loading') {
-                // Forçar tela de Auth se não tiver perfil
                 document.getElementById('view-auth').classList.add('active');
+                document.getElementById('side-nav').classList.add('md:hidden'); // Esconde menu se não logado
+                document.getElementById('mobile-header').classList.add('hidden');
+                document.querySelector('.main-content-wrapper').classList.remove('md:pl-64');
             } else {
-                showHeader = true;
-                showNav = true;
+                document.getElementById('side-nav').classList.remove('md:hidden');
+                document.getElementById('mobile-header').classList.remove('hidden');
+                document.querySelector('.main-content-wrapper').classList.add('md:pl-64');
                 
-                // Rotear
                 if (hash.startsWith('#/inicio')) {
                     document.getElementById('view-home').classList.add('active');
                     updateHomeData();
@@ -413,51 +387,34 @@
                     document.getElementById('view-catbotox').classList.add('active');
                 } else if (hash.startsWith('#/ppp-lobby')) {
                     document.getElementById('view-ppp-lobby').classList.add('active');
-                    cleanupPPPRoom(); // Limpar sala anterior se existir
+                    cleanupPPPRoom();
                 } else if (hash.startsWith('#/ppp/')) {
                     document.getElementById('view-ppp-room').classList.add('active');
-                    showNav = false; // Esconde nav na sala de jogo
                     const roomId = hash.split('/')[2];
-                    if (roomId !== window.globalState.currentRoomId) {
-                        initPPPRoom(roomId);
-                    }
+                    document.getElementById('room-id-display').innerText = `SALA: ${roomId}`;
+                    if (roomId !== window.globalState.currentRoomId) initPPPRoom(roomId);
                 } else {
                     document.getElementById('view-home').classList.add('active');
                     window.location.hash = '#/inicio';
                 }
             }
 
-            // Atualizar UI base
-            document.getElementById('main-header').style.display = showHeader ? 'flex' : 'none';
-            document.getElementById('bottom-nav').style.display = showNav ? 'flex' : 'none';
-            
-            // Atualizar highlight da navegação
+            // Highlight Navegação
             document.querySelectorAll('.nav-item').forEach(item => {
-                const icon = item.querySelector('i');
-                const text = item.querySelector('span');
                 if (hash.startsWith(item.dataset.route)) {
-                    item.classList.add('text-white');
-                    item.classList.remove('text-gray-500');
-                    if(item.dataset.route === '#/ppp') {
-                       item.querySelector('.rounded-full')?.classList.add('scale-110');
-                    } else {
-                       icon.classList.add('scale-110');
-                    }
+                    item.classList.add('text-osb-white', 'bg-osb-surface');
+                    item.classList.remove('text-osb-gray');
+                    item.querySelector('i').classList.add('text-osb-green');
                 } else {
-                    item.classList.remove('text-white');
-                    item.classList.add('text-gray-500');
-                    if(item.dataset.route === '#/ppp') {
-                       item.querySelector('.rounded-full')?.classList.remove('scale-110');
-                    } else {
-                       icon.classList.remove('scale-110');
-                    }
+                    item.classList.remove('text-osb-white', 'bg-osb-surface');
+                    item.classList.add('text-osb-gray');
+                    item.querySelector('i').classList.remove('text-osb-green');
                 }
             });
         };
 
         window.addEventListener('hashchange', renderRoute);
 
-        // --- Autenticação ---
         const initAuth = async () => {
             try {
                 if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
@@ -474,7 +431,6 @@
         onAuthStateChanged(auth, async (user) => {
             window.globalState.user = user;
             if (user) {
-                // Regra 3: Auth first, then queries
                 const profileRef = doc(db, getPublicPath('users'), user.uid);
                 try {
                     const snap = await getDoc(profileRef);
@@ -482,7 +438,6 @@
                         window.globalState.profile = snap.data();
                         finishAuth();
                     } else {
-                        // Precisa criar perfil. Mostra tela de auth.
                         document.getElementById('view-loading').classList.remove('active');
                         renderRoute();
                     }
@@ -491,28 +446,41 @@
                 }
             } else {
                 window.globalState.profile = null;
+                renderRoute();
             }
         });
 
         const finishAuth = () => {
-            // Preenche header
             const p = window.globalState.profile;
-            document.getElementById('header-profile').innerHTML = `
-                <img src="${p.photoURL}" class="w-8 h-8 rounded-full border border-gray-700 bg-gray-900 object-cover">
-            `;
-            // Remove loading
+            // Desktop Profile
+            const deskProfile = document.getElementById('desktop-profile');
+            if(deskProfile) {
+                deskProfile.classList.remove('hidden');
+                document.getElementById('desk-avatar').src = p.photoURL;
+                document.getElementById('desk-name').innerText = p.name;
+            }
+            // Mobile Profile
+            const mobAvatar = document.getElementById('mobile-avatar');
+            if(mobAvatar) {
+                mobAvatar.classList.remove('hidden');
+                mobAvatar.src = p.photoURL;
+            }
+
             document.getElementById('view-loading').classList.remove('active');
-            // Força render da rota atual
             renderRoute();
         };
 
-        // Ações de Login
+        window.logout = async () => {
+            await firebaseSignOut(auth);
+            window.location.hash = '#/inicio';
+            window.location.reload();
+        }
+
         document.getElementById('btn-google-login').addEventListener('click', async () => {
             const provider = new GoogleAuthProvider();
             try {
                 const result = await signInWithPopup(auth, provider);
                 const user = result.user;
-                // Salvar/Atualizar perfil
                 const profileRef = doc(db, getPublicPath('users'), user.uid);
                 const profileData = {
                     uid: user.uid,
@@ -531,10 +499,10 @@
 
         document.getElementById('btn-join-group').addEventListener('click', async () => {
             const name = document.getElementById('auth-name-input').value.trim();
-            if(!name) { window.showToast("Digita um nome aí brother!", "error"); return; }
+            if(!name) { window.showToast("Informe seu vulgo.", "error"); return; }
             
             const user = window.globalState.user;
-            if(!user) return; // Deveria estar anônimo já
+            if(!user) return;
 
             const profileRef = doc(db, getPublicPath('users'), user.uid);
             const profileData = {
@@ -545,7 +513,7 @@
             };
             
             const btn = document.getElementById('btn-join-group');
-            btn.innerHTML = '<i class="ph-duotone ph-spinner-gap animate-spin"></i> Entrando...';
+            btn.innerHTML = '<i class="ph-bold ph-circle-notch animate-spin"></i> Entrando...';
             btn.disabled = true;
 
             try {
@@ -558,29 +526,25 @@
             }
         });
 
-        // --- Updates de UI ---
         function updateHomeData() {
             if(!window.globalState.profile) return;
             document.getElementById('home-user-name').innerText = window.globalState.profile.name;
-            document.getElementById('home-user-avatar').src = window.globalState.profile.photoURL;
         }
-
-        // --- STREAMING_CHUNK: Lógica do Mini-Game PPP ---
 
         window.selectPppTime = (time) => {
             window.globalState.pppSelectedTime = time;
             document.querySelectorAll('.ppp-time-btn').forEach(btn => {
                 if(parseInt(btn.dataset.time) === time) {
-                    btn.className = "ppp-time-btn py-3 rounded-2xl font-bold bg-purple-600 border border-purple-500 text-white shadow-[0_0_15px_rgba(147,51,234,0.4)] transition-all active:scale-95";
+                    btn.className = "ppp-time-btn py-3 rounded-lg font-bold bg-osb-green text-osb-black border border-osb-green transition-colors";
                 } else {
-                    btn.className = "ppp-time-btn py-3 rounded-2xl font-bold bg-white/5 border border-white/10 text-gray-400 transition-all active:scale-95";
+                    btn.className = "ppp-time-btn py-3 rounded-lg font-bold border border-osb-border text-osb-gray hover:border-osb-green transition-colors";
                 }
             });
         };
 
         document.getElementById('btn-create-ppp').addEventListener('click', async () => {
             const btn = document.getElementById('btn-create-ppp');
-            btn.innerHTML = '<i class="ph-duotone ph-spinner-gap animate-spin"></i> Criando...';
+            btn.innerHTML = '<i class="ph-bold ph-circle-notch animate-spin"></i> Criando...';
             btn.disabled = true;
 
             try {
@@ -604,11 +568,10 @@
                 window.showToast("Erro ao criar sala", "error");
             }
             
-            btn.innerHTML = 'Criar Sala VIP <i class="ph-fill ph-play text-xl"></i>';
+            btn.innerHTML = 'Criar Sala <i class="ph-bold ph-play"></i>';
             btn.disabled = false;
         });
 
-        // Gerenciamento da Sala Ativa
         function cleanupPPPRoom() {
             if(window.globalState.pppUnsubscribe) {
                 window.globalState.pppUnsubscribe();
@@ -625,15 +588,14 @@
             
             document.getElementById('ppp-dynamic-container').innerHTML = `
                 <div class="flex-1 flex flex-col items-center justify-center">
-                    <i class="ph-duotone ph-spinner-gap text-4xl text-purple-500 animate-spin mb-4"></i>
-                    <p class="text-gray-400">Buscando sala...</p>
+                    <i class="ph-bold ph-circle-notch text-4xl text-osb-green animate-spin mb-4"></i>
+                    <p class="text-osb-gray uppercase font-bold tracking-widest text-xs">Conectando à sala...</p>
                 </div>
             `;
 
             window.globalState.pppUnsubscribe = onSnapshot(roomRef, (snap) => {
                 if (snap.exists()) {
-                    const data = snap.data();
-                    renderPPPRoomUI(data);
+                    renderPPPRoomUI(snap.data());
                 } else {
                     window.showToast("Sala fechada ou não existe", "error");
                     navigate('#/ppp-lobby');
@@ -652,115 +614,98 @@
             textArea.select();
             try {
                 document.execCommand('copy');
-                window.showToast("Link copiado! Mande no grupo.", "success");
-            } catch (err) {
-                console.error('Falha ao copiar', err);
-            }
+                window.showToast("Link copiado!", "success");
+            } catch (err) { console.error(err); }
             document.body.removeChild(textArea);
         };
 
         window.joinPPPRoom = async () => {
             const roomRef = doc(db, getPublicPath('ppp_rooms'), window.globalState.currentRoomId);
-            await updateDoc(roomRef, {
-                participants: arrayUnion(window.globalState.profile)
-            });
+            await updateDoc(roomRef, { participants: arrayUnion(window.globalState.profile) });
         };
 
         window.startPPPGame = async () => {
             const roomRef = doc(db, getPublicPath('ppp_rooms'), window.globalState.currentRoomId);
-            await updateDoc(roomRef, {
-                status: 'playing',
-                timerStart: Date.now()
-            });
+            await updateDoc(roomRef, { status: 'playing', timerStart: Date.now() });
         };
 
         window.castVote = async (voteType, targetUid) => {
             const roomRef = doc(db, getPublicPath('ppp_rooms'), window.globalState.currentRoomId);
             const myUid = window.globalState.profile.uid;
-            const votePath = `votes.${targetUid}.${myUid}`;
-            try {
-                // Modificando UI imediatamente para feedback rápido
-                document.getElementById('vote-buttons-area').innerHTML = `
-                    <div class="text-center p-6 glass-panel rounded-3xl animate-fade-in border-${voteType === 'pega' ? 'green' : voteType === 'passa' ? 'red' : 'yellow'}-500/30">
-                        <p class="text-gray-400 text-sm mb-2">Veredito registrado:</p>
-                        <span class="text-3xl font-black uppercase tracking-widest text-${voteType === 'pega' ? 'green' : voteType === 'passa' ? 'red' : 'yellow'}-400">${voteType}</span>
-                        <p class="text-xs mt-4 text-gray-500 animate-pulse">Aguardando tempo acabar...</p>
-                    </div>
-                `;
-                await updateDoc(roomRef, { [votePath]: voteType });
-            } catch(e) {
-                console.error(e);
-            }
+            
+            // UI Feedback Imediato seguindo as cores Preto Branco Verde rigorosamente
+            const styleClass = voteType === 'pega' ? 'border-osb-green text-osb-green' 
+                             : voteType === 'passa' ? 'border-osb-border text-osb-white bg-osb-surface' 
+                             : 'border-osb-white text-osb-white';
+
+            document.getElementById('vote-buttons-area').innerHTML = `
+                <div class="card p-6 text-center border-2 ${styleClass}">
+                    <p class="text-xs uppercase tracking-widest mb-2 opacity-80">Voto Computado</p>
+                    <span class="text-3xl font-black uppercase tracking-widest">${voteType}</span>
+                </div>
+            `;
+            await updateDoc(roomRef, { [`votes.${targetUid}.${myUid}`]: voteType });
         };
 
-        // Renderização Dinâmica dos Estados do Jogo
         function renderPPPRoomUI(room) {
             const container = document.getElementById('ppp-dynamic-container');
             const myUid = window.globalState.profile.uid;
             const isHost = room.hostId === myUid;
             const isParticipant = room.participants.some(p => p.uid === myUid);
             
-            // --- ESTADO: ESPERANDO ---
             if (room.status === 'waiting') {
                 clearInterval(window.globalState.pppTimerInterval);
                 
                 let participantsHtml = room.participants.map(p => `
-                    <div class="flex flex-col items-center gap-1 w-[4.5rem]">
-                        <img src="${p.photoURL}" class="w-14 h-14 rounded-full border-2 border-gray-700 bg-gray-900 object-cover shadow-lg">
-                        <span class="text-[10px] font-bold text-gray-300 truncate w-full text-center">${p.name}</span>
+                    <div class="flex flex-col items-center gap-2 w-16">
+                        <img src="${p.photoURL}" class="w-12 h-12 rounded-full border-2 border-osb-surface">
+                        <span class="text-[10px] font-bold text-osb-gray truncate w-full text-center">${p.name}</span>
                     </div>
                 `).join('');
 
                 let actionHtml = '';
                 if (!isParticipant) {
-                    actionHtml = `<button onclick="joinPPPRoom()" class="w-full py-4 bg-purple-600 hover:bg-purple-500 rounded-2xl font-bold text-white shadow-[0_0_20px_rgba(147,51,234,0.4)] transition-transform active:scale-95">Entrar na Roda</button>`;
+                    actionHtml = `<button onclick="joinPPPRoom()" class="w-full btn-primary py-4 rounded-lg text-lg">Entrar na Roda</button>`;
                 } else if (isHost) {
-                    const disabled = room.participants.length < 2 ? 'opacity-50 cursor-not-allowed' : 'active:scale-95 shadow-[0_0_20px_rgba(236,72,153,0.4)]';
-                    actionHtml = `<button onclick="${room.participants.length >= 2 ? 'startPPPGame()' : ''}" class="w-full py-4 bg-gradient-to-r from-pink-600 to-purple-600 hover:opacity-90 rounded-2xl font-bold text-white transition-all ${disabled}">Começar Jogo</button>`;
-                    if(room.participants.length < 2) {
-                        actionHtml += `<p class="text-center text-[10px] text-gray-500 mt-2 uppercase tracking-widest">Precisa de 2+ pessoas</p>`;
-                    }
+                    const disabled = room.participants.length < 2 ? 'opacity-50 pointer-events-none' : '';
+                    actionHtml = `
+                        <button onclick="${room.participants.length >= 2 ? 'startPPPGame()' : ''}" class="w-full btn-primary py-4 rounded-lg text-lg ${disabled}">Iniciar Jogo</button>
+                        ${room.participants.length < 2 ? '<p class="text-center text-xs text-osb-gray mt-2 uppercase">Aguardando mais jogadores</p>' : ''}
+                    `;
                 } else {
-                    actionHtml = `<p class="text-center text-gray-500 text-sm animate-pulse border border-gray-800 rounded-2xl py-4 bg-black/20">Aguardando o host iniciar...</p>`;
+                    actionHtml = `<div class="card py-4 text-center border-dashed border-osb-border"><p class="text-sm font-bold text-osb-gray uppercase animate-pulse">Aguardando o host iniciar...</p></div>`;
                 }
 
                 container.innerHTML = `
-                    <div class="glass-panel p-6 rounded-[2rem] text-center shadow-[0_0_40px_rgba(147,51,234,0.1)] border-purple-500/20 mb-6 flex-1 flex flex-col relative overflow-hidden animate-fade-in">
-                        <div class="absolute top-0 right-0 w-32 h-32 bg-purple-500/10 blur-3xl rounded-full pointer-events-none"></div>
-                        <h2 class="text-2xl font-black mb-1 relative z-10">Sala de Espera</h2>
-                        <p class="text-gray-400 text-xs mb-6 relative z-10">Convide a galera pra votar.</p>
+                    <div class="card p-6 mb-6 flex-1 flex flex-col items-center justify-center text-center relative overflow-hidden border-osb-border">
+                        <h2 class="text-3xl font-black mb-2">Sala de Espera</h2>
+                        <p class="text-osb-gray text-sm mb-6">Mande o link no grupo.</p>
                         
-                        <button onclick="copyPPPLink()" class="w-full bg-black/40 hover:bg-black/60 py-4 rounded-2xl flex items-center justify-center gap-2 border border-white/10 transition-colors mb-8 relative z-10">
-                            <i class="ph-bold ph-link text-xl"></i> Copiar Link da Sala
+                        <button onclick="copyPPPLink()" class="w-full btn-outline py-3 rounded-lg flex items-center justify-center gap-2 mb-8">
+                            <i class="ph-bold ph-link text-xl"></i> Copiar Link
                         </button>
 
-                        <div class="text-left flex-1 relative z-10">
-                            <h3 class="font-bold text-[10px] text-gray-500 uppercase tracking-widest mb-4 flex items-center justify-between">
-                                Na Roda 
-                                <span class="bg-purple-500/20 text-purple-400 px-2 py-0.5 rounded-full">${room.participants.length}</span>
+                        <div class="w-full text-left">
+                            <h3 class="font-bold text-xs text-osb-gray uppercase tracking-widest mb-4 border-b border-osb-border pb-2">
+                                Jogadores na sala (${room.participants.length})
                             </h3>
-                            <div class="flex flex-wrap gap-4 justify-center sm:justify-start">
+                            <div class="flex flex-wrap gap-4 justify-center md:justify-start">
                                 ${participantsHtml}
                             </div>
                         </div>
                     </div>
-                    <div class="mt-auto animate-slide-up" style="animation-delay: 0.1s;">
-                        ${actionHtml}
-                    </div>
+                    <div class="mt-auto">${actionHtml}</div>
                 `;
             } 
-            // --- ESTADO: JOGANDO ---
             else if (room.status === 'playing') {
                 const target = room.participants[room.currentIndex];
                 const isMe = target.uid === myUid;
                 const myVote = room.votes?.[target.uid]?.[myUid];
 
-                // Controle Local de Timer
                 clearInterval(window.globalState.pppTimerInterval);
                 const elapsedSinceStart = Math.floor((Date.now() - room.timerStart) / 1000);
                 let localTimeLeft = Math.max(0, room.timeLimit - elapsedSinceStart);
                 
-                // Função auxiliar para passar rodada (Host only)
                 const checkAndNext = async () => {
                     if (isHost && localTimeLeft <= 0) {
                         const roomRef = doc(db, getPublicPath('ppp_rooms'), window.globalState.currentRoomId);
@@ -776,68 +721,62 @@
                 let voteControls = '';
                 if (isMe) {
                     voteControls = `
-                        <div class="mt-6 text-center p-6 glass-panel rounded-3xl border-purple-500/20 shadow-[0_0_30px_rgba(147,51,234,0.1)]">
-                            <p class="text-gray-300 font-medium">A galera está te julgando agora...</p>
-                            <div class="flex justify-center gap-2 mt-4">
-                                <div class="w-3 h-3 bg-purple-500 rounded-full animate-bounce"></div>
-                                <div class="w-3 h-3 bg-purple-500 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
-                                <div class="w-3 h-3 bg-purple-500 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
-                            </div>
+                        <div class="card p-6 text-center border-dashed border-osb-border">
+                            <p class="font-bold text-osb-gray uppercase tracking-widest">Aguarde...</p>
+                            <p class="text-sm text-osb-white mt-1">A galera está julgando você.</p>
                         </div>
                     `;
                 } else if (myVote) {
-                    const color = myVote === 'pega' ? 'green' : myVote === 'passa' ? 'red' : 'yellow';
+                    const styleClass = myVote === 'pega' ? 'border-osb-green text-osb-green' 
+                                     : myVote === 'passa' ? 'border-osb-border text-osb-white bg-osb-surface' 
+                                     : 'border-osb-white text-osb-white';
                     voteControls = `
-                        <div class="mt-6 text-center p-6 glass-panel rounded-3xl border-${color}-500/30">
-                            <p class="text-gray-400 text-sm mb-2">Veredito registrado:</p>
-                            <span class="text-3xl font-black uppercase tracking-widest text-${color}-400">${myVote}</span>
-                            <p class="text-xs mt-4 text-gray-500 animate-pulse">Aguardando tempo acabar...</p>
+                        <div class="card p-6 text-center border-2 ${styleClass}">
+                            <p class="text-xs uppercase tracking-widest mb-2 opacity-80">Voto Computado</p>
+                            <span class="text-3xl font-black uppercase tracking-widest">${myVote}</span>
                         </div>
                     `;
                 } else {
+                    // Botões estritamente Preto Branco Verde
                     voteControls = `
-                        <div class="grid grid-cols-3 gap-3 mt-6">
-                            <button onclick="castVote('pega', '${target.uid}')" class="bg-gradient-to-br from-green-500/20 to-green-600/10 hover:bg-green-500/30 text-green-400 border border-green-500/40 py-6 rounded-3xl font-black text-lg transition-transform active:scale-95 flex flex-col items-center gap-1 shadow-[0_0_15px_rgba(34,197,94,0.1)]">
-                                <i class="ph-fill ph-check-circle text-2xl"></i> PEGA
+                        <div class="grid grid-cols-3 gap-3">
+                            <button onclick="castVote('pega', '${target.uid}')" class="py-6 rounded-lg font-black text-lg border-2 border-osb-green text-osb-green hover:bg-osb-green hover:text-osb-black transition-colors flex flex-col items-center">
+                                PEGA
                             </button>
-                            <button onclick="castVote('pensa', '${target.uid}')" class="bg-gradient-to-br from-yellow-500/20 to-yellow-600/10 hover:bg-yellow-500/30 text-yellow-400 border border-yellow-500/40 py-6 rounded-3xl font-black text-lg transition-transform active:scale-95 flex flex-col items-center gap-1 shadow-[0_0_15px_rgba(234,179,8,0.1)]">
-                                <i class="ph-fill ph-question text-2xl"></i> PENSA
+                            <button onclick="castVote('pensa', '${target.uid}')" class="py-6 rounded-lg font-black text-lg border-2 border-osb-white text-osb-white hover:bg-osb-white hover:text-osb-black transition-colors flex flex-col items-center">
+                                PENSA
                             </button>
-                            <button onclick="castVote('passa', '${target.uid}')" class="bg-gradient-to-br from-red-500/20 to-red-600/10 hover:bg-red-500/30 text-red-400 border border-red-500/40 py-6 rounded-3xl font-black text-lg transition-transform active:scale-95 flex flex-col items-center gap-1 shadow-[0_0_15px_rgba(239,68,68,0.1)]">
-                                <i class="ph-fill ph-x-circle text-2xl"></i> PASSA
+                            <button onclick="castVote('passa', '${target.uid}')" class="py-6 rounded-lg font-black text-lg border-2 border-osb-border bg-osb-surface text-osb-white hover:border-osb-white transition-colors flex flex-col items-center">
+                                PASSA
                             </button>
                         </div>
                     `;
                 }
 
                 container.innerHTML = `
-                    <div class="flex justify-between items-center text-xs font-bold text-gray-400 mb-3 uppercase tracking-widest px-2">
-                        <span>Rodada ${room.currentIndex + 1}/${room.participants.length}</span>
-                        <span id="ppp-timer-text" class="text-xl tracking-normal text-purple-400 font-black">00:${localTimeLeft.toString().padStart(2, '0')}</span>
-                    </div>
-
-                    <div class="relative glass-panel rounded-[2.5rem] p-8 pb-10 flex flex-col items-center justify-center text-center shadow-2xl overflow-hidden min-h-[45vh] border-purple-500/20">
-                        <div class="absolute inset-0 bg-gradient-to-b from-purple-900/20 to-transparent pointer-events-none"></div>
-                        
-                        <div class="relative w-36 h-36 mb-6">
-                            <div class="absolute inset-0 bg-purple-500/20 rounded-full blur-xl animate-pulse-glow"></div>
-                            <img src="${target.photoURL}" class="w-full h-full rounded-full border-[4px] border-[#0a0a0f] object-cover shadow-2xl relative z-10">
+                    <div class="flex justify-between items-end mb-4 border-b border-osb-border pb-2">
+                        <div>
+                            <p class="text-[10px] font-bold text-osb-gray uppercase tracking-widest">Rodada ${room.currentIndex + 1}/${room.participants.length}</p>
+                            <h3 class="text-xl font-black uppercase truncate max-w-[200px]">${target.name}</h3>
                         </div>
-                        
-                        <h2 class="text-3xl font-black text-white relative z-10 tracking-tight">${target.name}</h2>
-                        <p class="text-gray-400 mt-2 relative z-10 text-sm">${isMe ? "O tribunal está decidindo seu destino..." : "E aí, qual é o veredito?"}</p>
-
-                        <div class="absolute bottom-0 left-0 right-0 h-1.5 bg-black/50">
-                            <div id="ppp-progress-bar" class="h-full bg-gradient-to-r from-pink-500 to-purple-500 transition-all duration-1000 ease-linear shadow-[0_0_10px_rgba(168,85,247,0.8)]" style="width: ${(localTimeLeft / room.timeLimit) * 100}%"></div>
+                        <div class="text-right">
+                            <span id="ppp-timer-text" class="text-4xl font-black text-osb-white tracking-tighter">00:${localTimeLeft.toString().padStart(2, '0')}</span>
                         </div>
                     </div>
 
-                    <div id="vote-buttons-area" class="animate-slide-up" style="animation-delay: 0.1s">
+                    <div class="flex-1 flex flex-col items-center justify-center py-8">
+                        <img src="${target.photoURL}" class="w-48 h-48 rounded-full border-4 border-osb-surface mb-6 object-cover grayscale transition-all hover:grayscale-0">
+                    </div>
+
+                    <div class="w-full h-1 bg-osb-surface mb-6 rounded-full overflow-hidden">
+                        <div id="ppp-progress-bar" class="h-full bg-osb-green transition-all duration-1000 ease-linear" style="width: ${(localTimeLeft / room.timeLimit) * 100}%"></div>
+                    </div>
+
+                    <div id="vote-buttons-area" class="mt-auto">
                         ${voteControls}
                     </div>
                 `;
 
-                // Loop do timer
                 window.globalState.pppTimerInterval = setInterval(() => {
                     localTimeLeft--;
                     if (localTimeLeft < 0) {
@@ -845,21 +784,12 @@
                         checkAndNext();
                         return;
                     }
-                    
-                    const timerText = document.getElementById('ppp-timer-text');
-                    const progressBar = document.getElementById('ppp-progress-bar');
-                    
-                    if (timerText) {
-                        timerText.innerText = `00:${localTimeLeft.toString().padStart(2, '0')}`;
-                        if (localTimeLeft <= 5) timerText.classList.add('text-red-500', 'animate-pulse');
-                    }
-                    if (progressBar) {
-                        progressBar.style.width = `${(localTimeLeft / room.timeLimit) * 100}%`;
-                        if (localTimeLeft <= 5) progressBar.className = "h-full bg-red-500 transition-all duration-1000 ease-linear shadow-[0_0_10px_rgba(239,68,68,0.8)]";
-                    }
+                    const tText = document.getElementById('ppp-timer-text');
+                    const pBar = document.getElementById('ppp-progress-bar');
+                    if (tText) tText.innerText = `00:${localTimeLeft.toString().padStart(2, '0')}`;
+                    if (pBar) pBar.style.width = `${(localTimeLeft / room.timeLimit) * 100}%`;
                 }, 1000);
             }
-            // --- ESTADO: FINALIZADO ---
             else if (room.status === 'finished') {
                 clearInterval(window.globalState.pppTimerInterval);
 
@@ -870,43 +800,38 @@
                     const passas = Object.values(votes).filter(v => v === 'passa').length;
 
                     return `
-                        <div class="glass-panel border-white/5 p-4 rounded-3xl flex items-center gap-4 relative overflow-hidden">
-                            <img src="${p.photoURL}" class="w-16 h-16 rounded-2xl border-2 border-[#0a0a0f] object-cover shadow-lg relative z-10">
-                            <div class="flex-1 relative z-10">
-                                <h3 class="font-bold text-lg leading-none mb-2">${p.name}</h3>
-                                <div class="flex gap-4 text-xs">
-                                    <span class="text-green-400 font-bold bg-green-400/10 px-2 py-1 rounded-lg border border-green-400/20"><i class="ph-bold ph-check"></i> ${pegas}</span>
-                                    <span class="text-yellow-400 font-bold bg-yellow-400/10 px-2 py-1 rounded-lg border border-yellow-400/20"><i class="ph-bold ph-question"></i> ${pensas}</span>
-                                    <span class="text-red-400 font-bold bg-red-400/10 px-2 py-1 rounded-lg border border-red-400/20"><i class="ph-bold ph-x"></i> ${passas}</span>
-                                </div>
+                        <div class="card p-4 flex items-center justify-between mb-3 border-osb-border">
+                            <div class="flex items-center gap-3">
+                                <img src="${p.photoURL}" class="w-12 h-12 rounded-full grayscale">
+                                <h3 class="font-bold uppercase">${p.name}</h3>
+                            </div>
+                            <div class="text-right text-xs font-bold font-mono grid grid-cols-3 gap-3">
+                                <div class="flex flex-col"><span class="text-osb-green">PEG</span><span class="text-lg">${pegas}</span></div>
+                                <div class="flex flex-col"><span class="text-osb-white">PEN</span><span class="text-lg">${pensas}</span></div>
+                                <div class="flex flex-col"><span class="text-osb-gray">PAS</span><span class="text-lg">${passas}</span></div>
                             </div>
                         </div>
                     `;
                 }).join('');
 
                 container.innerHTML = `
-                    <div class="text-center mt-2 mb-8 animate-fade-in">
-                        <div class="w-20 h-20 mx-auto bg-gradient-to-br from-yellow-400/20 to-orange-500/20 rounded-full flex items-center justify-center mb-4 border border-yellow-500/30">
-                            <i class="ph-fill ph-trophy text-4xl text-yellow-500"></i>
-                        </div>
-                        <h2 class="text-3xl font-black text-white">Fim de Jogo!</h2>
-                        <p class="text-gray-400 text-xs tracking-widest uppercase mt-1">Resultados da Roda</p>
+                    <div class="text-center mb-6 pt-4">
+                        <h2 class="text-4xl font-black uppercase tracking-tighter">Fim de Jogo</h2>
+                        <p class="text-osb-gray text-xs tracking-widest uppercase mt-2">Veredito Final</p>
                     </div>
                     
-                    <div class="space-y-3 animate-slide-up flex-1 overflow-y-auto pb-4">
+                    <div class="flex-1 overflow-y-auto pb-6">
                         ${resultsHtml}
                     </div>
 
-                    <button onclick="navigate('#/ppp-lobby')" class="w-full mt-6 py-4 glass-panel hover:bg-white/10 rounded-2xl font-bold text-white transition-transform active:scale-95 animate-slide-up border-white/20" style="animation-delay: 0.2s">
+                    <button onclick="navigate('#/ppp-lobby')" class="w-full btn-outline py-4 rounded-lg text-lg uppercase tracking-widest mt-auto">
                         Sair da Sala
                     </button>
                 `;
             }
         }
 
-        // Kickoff inicial da Autenticação
         initAuth();
-
     </script>
 </body>
 </html>
