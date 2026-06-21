@@ -404,6 +404,12 @@
         </div>
     </div>
 
+    <!-- Modal Tela Cheia (Fotos) -->
+    <div id="modal-fullscreen-img" class="hidden fixed inset-0 z-[300] bg-black/95 flex items-center justify-center p-4 cursor-pointer" onclick="this.classList.add('hidden')">
+        <img id="fullscreen-img-target" src="" class="max-w-full max-h-full object-contain pointer-events-none">
+        <button class="absolute top-4 right-4 text-osb-white hover:text-osb-green transition-colors"><i class="ph-bold ph-x text-3xl"></i></button>
+    </div>
+
     <div id="toast-container" class="fixed top-4 left-1/2 -translate-x-1/2 z-[200] flex flex-col gap-2 pointer-events-none w-full max-w-sm px-4"></div>
 
     <script type="module">
@@ -464,7 +470,37 @@
             return name.trim().toLowerCase().replace(/[^a-z0-9_]/g, '');
         };
 
-        // Upload para o Catbox.moe com sua Chave via Proxy (Burlar CORS)
+        window.openFullScreen = (url) => {
+            document.getElementById('fullscreen-img-target').src = url;
+            document.getElementById('modal-fullscreen-img').classList.remove('hidden');
+        };
+
+        // Upload Imagens via Imgur
+        async function uploadToImgur(file) {
+            const formData = new FormData();
+            formData.append('image', file);
+
+            try {
+                const response = await fetch('https://api.imgur.com/3/image', {
+                    method: 'POST',
+                    headers: {
+                        Authorization: 'Client-ID 513bb727cecf9ac'
+                    },
+                    body: formData
+                });
+                const data = await response.json();
+                if (!data.success) {
+                    console.error('Imgur Error:', data);
+                    throw new Error('Falha no upload da imagem no Imgur');
+                }
+                return data.data.link;
+            } catch (err) {
+                console.error("Fetch Imgur falhou:", err);
+                throw err;
+            }
+        }
+
+        // Upload Vídeos via Catbox + Proxy (Burlar CORS)
         async function uploadToCatbox(file) {
             const formData = new FormData();
             formData.append('reqtype', 'fileupload');
@@ -472,7 +508,6 @@
             formData.append('userhash', '307daba6918600198381c9952');
 
             try {
-                // Proxy CORS público para intermediar e ignorar o bloqueio do navegador
                 const targetUrl = 'https://catbox.moe/user/api.php';
                 const proxyUrl = 'https://corsproxy.io/?' + encodeURIComponent(targetUrl);
 
@@ -484,12 +519,12 @@
                 if (!response.ok) {
                     const errorText = await response.text();
                     console.error('Catbox Error:', errorText);
-                    throw new Error('Falha no upload da imagem');
+                    throw new Error('Falha no upload de vídeo');
                 }
                 const url = await response.text();
                 return url.trim();
             } catch (err) {
-                console.error("Fetch falhou:", err);
+                console.error("Fetch Catbox falhou:", err);
                 throw err;
             }
         }
@@ -685,7 +720,7 @@
 
                 if (window.globalState.pendingFile) {
                     try {
-                        photoURL = await uploadToCatbox(window.globalState.pendingFile);
+                        photoURL = await uploadToImgur(window.globalState.pendingFile);
                     } catch (e) {
                         window.showToast("Erro ao fazer upload da foto", "error");
                         btn.innerHTML = originalText;
@@ -926,9 +961,15 @@
 
             window.showToast("Enviando arquivo (Pode demorar se for grande)...", "success");
             try {
-                const url = await uploadToCatbox(file);
-                if (type === 'photo') window.globalState.localRoomMedia.photos.push(url);
-                if (type === 'video') window.globalState.localRoomMedia.videos.push(url);
+                let url = '';
+                if (type === 'photo') {
+                    url = await uploadToImgur(file);
+                    window.globalState.localRoomMedia.photos.push(url);
+                } else if (type === 'video') {
+                    url = await uploadToCatbox(file);
+                    window.globalState.localRoomMedia.videos.push(url);
+                }
+
                 if (window.globalState.currentRoomData) renderPPPRoomUI(window.globalState.currentRoomData);
             } catch(err) {
                 console.error(err);
@@ -1101,7 +1142,7 @@
                 photos.forEach((url, i) => {
                     galleryHtml += `
                     <div class="relative w-20 h-20 rounded-md overflow-hidden border border-osb-border group shrink-0">
-                        <img src="${url}" class="w-full h-full object-cover">
+                        <img src="${url}" class="w-full h-full object-cover cursor-pointer" onclick="openFullScreen('${url}')">
                         <div class="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer" onclick="removePPPMedia('photo', ${i})">
                             <i class="ph-bold ph-trash text-osb-white text-xl"></i>
                         </div>
@@ -1110,8 +1151,8 @@
                 videos.forEach((url, i) => {
                     galleryHtml += `
                     <div class="relative w-20 h-20 rounded-md overflow-hidden border border-osb-border group bg-osb-black flex items-center justify-center shrink-0">
-                        <video src="${url}" class="absolute inset-0 w-full h-full object-cover opacity-50"></video>
-                        <i class="ph-fill ph-video-camera text-2xl text-osb-white z-10"></i>
+                        <video src="${url}" class="absolute inset-0 w-full h-full object-cover opacity-50 pointer-events-none" preload="metadata"></video>
+                        <i class="ph-fill ph-video-camera text-2xl text-osb-white z-10 pointer-events-none"></i>
                         <div class="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer z-20" onclick="removePPPMedia('video', ${i})">
                             <i class="ph-bold ph-trash text-osb-white text-xl"></i>
                         </div>
@@ -1141,7 +1182,7 @@
                             </div>
                             
                             <input type="file" id="ppp-photo-input" accept="image/*" class="hidden" onchange="uploadPPPMedia(event, 'photo')">
-                            <input type="file" id="ppp-video-input" accept="video/mp4,video/webm,video/ogg" class="hidden" onchange="uploadPPPMedia(event, 'video')">
+                            <input type="file" id="ppp-video-input" accept="video/mp4,video/webm,video/ogg,video/quicktime" class="hidden" onchange="uploadPPPMedia(event, 'video')">
                         </div>
 
                         <button id="btn-ppp-ready" onclick="setPPPReady()" class="w-full btn-primary py-4 rounded-lg text-lg uppercase tracking-widest font-black shrink-0 ${photos.length < 1 ? 'opacity-50 pointer-events-none' : ''}">
@@ -1222,10 +1263,12 @@
                 // Slider Carousel HTML
                 let mediaSliderHtml = '';
                 targetMedia.photos.forEach(url => {
-                    mediaSliderHtml += `<img src="${url}" class="snap-center w-full max-h-[40vh] object-contain rounded-lg shrink-0 bg-osb-surface border border-osb-border">`;
+                    mediaSliderHtml += `<img src="${url}" onclick="openFullScreen('${url}')" class="snap-center w-full max-h-[40vh] object-contain rounded-lg shrink-0 bg-osb-surface border border-osb-border cursor-pointer">`;
                 });
+                
+                // Add optimized video tag attributes for smooth mobile playback
                 targetMedia.videos.forEach(url => {
-                    mediaSliderHtml += `<video src="${url}" controls playsinline autoplay loop muted class="snap-center w-full max-h-[40vh] object-contain rounded-lg shrink-0 bg-osb-surface border border-osb-border"></video>`;
+                    mediaSliderHtml += `<video src="${url}" controls playsinline preload="metadata" class="snap-center w-full max-h-[40vh] object-contain rounded-lg shrink-0 bg-osb-surface border border-osb-border"></video>`;
                 });
 
                 container.innerHTML = `
