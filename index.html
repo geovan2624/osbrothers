@@ -332,7 +332,7 @@
                         <button onclick="navigate('#/ppp-lobby')" class="text-osb-gray hover:text-osb-white flex items-center gap-2 text-sm font-bold uppercase tracking-widest transition-colors">
                             <i class="ph-bold ph-arrow-left"></i> Sair
                         </button>
-                        <span class="text-xs font-mono text-osb-border" id="room-id-display"></span>
+                        <span class="text-sm font-black font-mono bg-osb-green text-osb-black px-4 py-1 rounded-lg tracking-widest shadow-lg" id="room-id-display"></span>
                     </div>
 
                     <!-- Container Dinâmico da Sala -->
@@ -367,7 +367,7 @@
 
     <!-- Modal de Edição de Perfil -->
     <div id="modal-profile" class="hidden fixed inset-0 z-[100] bg-black/90 backdrop-blur-sm flex items-center justify-center p-4">
-        <div class="card bg-osb-surface w-full max-w-sm p-6 relative animate-slide-up">
+        <div class="card bg-osb-surface w-full max-w-sm p-6 relative animate-slide-up max-h-[90vh] overflow-y-auto">
             <button onclick="closeProfileModal()" class="absolute top-4 right-4 text-osb-gray hover:text-osb-white">
                 <i class="ph-bold ph-x text-2xl"></i>
             </button>
@@ -382,12 +382,32 @@
                         <i class="ph-bold ph-camera text-osb-white text-2xl"></i>
                     </div>
                 </div>
-                <p class="text-[10px] text-osb-gray mt-2 uppercase tracking-widest">Clique para alterar foto</p>
+                <p class="text-[10px] text-osb-gray mt-2 uppercase tracking-widest text-center">Foto Principal<br>(Obrigatória para o PPP)</p>
             </div>
 
-            <div class="w-full mb-6">
+            <div class="w-full mb-4">
                 <label class="block text-xs font-bold text-osb-gray uppercase tracking-wider mb-2">Vulgo (Único)</label>
                 <input type="text" id="edit-name-input" class="w-full bg-osb-black border border-osb-border rounded-lg p-3 text-osb-white focus:outline-none focus:border-osb-green transition-colors lowercase">
+            </div>
+
+            <div class="w-full mb-6 border-t border-osb-border pt-4">
+                <label class="block text-xs font-bold text-osb-gray uppercase tracking-wider mb-2 flex justify-between">
+                    <span>Sua Galeria</span>
+                    <span class="text-[10px] text-osb-border">Max: 5 Fotos, 2 Vídeos</span>
+                </label>
+                <div id="edit-gallery-container" class="flex flex-wrap gap-2 mb-3">
+                    <!-- Thumbnails Injetados via JS -->
+                </div>
+                <div class="flex gap-2">
+                    <button id="btn-add-photo" class="flex-1 btn-outline py-2 rounded-lg text-xs flex justify-center items-center gap-1 border-osb-border text-osb-gray hover:border-osb-white hover:text-osb-white">
+                        <i class="ph-bold ph-image"></i> + Foto
+                    </button>
+                    <button id="btn-add-video" class="flex-1 btn-outline py-2 rounded-lg text-xs flex justify-center items-center gap-1 border-osb-border text-osb-gray hover:border-osb-white hover:text-osb-white">
+                        <i class="ph-bold ph-video-camera"></i> + Vídeo
+                    </button>
+                </div>
+                <input type="file" id="edit-gallery-photo-input" accept="image/*" class="hidden">
+                <input type="file" id="edit-gallery-video-input" accept="video/mp4,video/webm,video/ogg" class="hidden">
             </div>
 
             <button id="btn-save-profile" class="w-full btn-primary py-3 rounded-lg flex items-center justify-center gap-2 mb-4">
@@ -438,7 +458,8 @@
             currentRoomId: null,
             pppUnsubscribe: null,
             pppTimerInterval: null,
-            pendingFile: null // Armazena arquivo de imagem selecionado antes de salvar
+            pendingFile: null, // Armazena arquivo de imagem selecionado antes de salvar
+            tempGallery: { photos: [], videos: [] } // Estado para galeria
         };
 
         // --- Utilitários ---
@@ -631,6 +652,75 @@
             }
         };
 
+        // UI Galeria de Mídias
+        const renderGalleryUI = () => {
+            const container = document.getElementById('edit-gallery-container');
+            if(!container) return;
+            const { photos, videos } = window.globalState.tempGallery;
+            let html = '';
+
+            photos.forEach((url, i) => {
+                html += `
+                <div class="relative w-14 h-14 rounded-md overflow-hidden border border-osb-border group">
+                    <img src="${url}" class="w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer" onclick="removeGalleryItem('photo', ${i})">
+                        <i class="ph-bold ph-trash text-osb-white"></i>
+                    </div>
+                </div>`;
+            });
+
+            videos.forEach((url, i) => {
+                html += `
+                <div class="relative w-14 h-14 rounded-md overflow-hidden border border-osb-border group bg-osb-black flex items-center justify-center">
+                    <i class="ph-fill ph-video-camera text-xl text-osb-gray"></i>
+                    <div class="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer" onclick="removeGalleryItem('video', ${i})">
+                        <i class="ph-bold ph-trash text-osb-white"></i>
+                    </div>
+                </div>`;
+            });
+
+            container.innerHTML = html;
+        };
+
+        window.removeGalleryItem = (type, index) => {
+            if(type === 'photo') window.globalState.tempGallery.photos.splice(index, 1);
+            if(type === 'video') window.globalState.tempGallery.videos.splice(index, 1);
+            renderGalleryUI();
+        };
+
+        document.getElementById('btn-add-photo').addEventListener('click', () => {
+            if(window.globalState.tempGallery.photos.length >= 5) return window.showToast("Máx 5 fotos atingido", "error");
+            document.getElementById('edit-gallery-photo-input').click();
+        });
+
+        document.getElementById('btn-add-video').addEventListener('click', () => {
+            if(window.globalState.tempGallery.videos.length >= 2) return window.showToast("Máx 2 vídeos atingido", "error");
+            document.getElementById('edit-gallery-video-input').click();
+        });
+
+        const uploadGalleryMedia = async (e, type) => {
+            const file = e.target.files[0];
+            if(!file) return;
+            
+            if (type === 'photo' && file.size > 5 * 1024 * 1024) return window.showToast("Foto max 5MB", "error");
+            if (type === 'video' && file.size > 20 * 1024 * 1024) return window.showToast("Vídeo max 20MB", "error");
+
+            window.showToast("Enviando via Catbox...", "success");
+            try {
+                const url = await uploadToCatbox(file);
+                if (type === 'photo') window.globalState.tempGallery.photos.push(url);
+                if (type === 'video') window.globalState.tempGallery.videos.push(url);
+                renderGalleryUI();
+                window.showToast("Adicionado com sucesso!", "success");
+            } catch(err) {
+                window.showToast("Erro no envio", "error");
+            }
+            e.target.value = '';
+        };
+
+        document.getElementById('edit-gallery-photo-input').addEventListener('change', (e) => uploadGalleryMedia(e, 'photo'));
+        document.getElementById('edit-gallery-video-input').addEventListener('change', (e) => uploadGalleryMedia(e, 'video'));
+
         document.getElementById('setup-avatar-input').addEventListener('change', (e) => handleImageSelection(e, 'setup-avatar-preview'));
         document.getElementById('edit-avatar-input').addEventListener('change', (e) => handleImageSelection(e, 'edit-avatar-preview'));
 
@@ -691,7 +781,8 @@
                     uid: user.uid,
                     name: cleanName,
                     photoURL: photoURL,
-                    isAnonymous: user.isAnonymous
+                    isAnonymous: user.isAnonymous,
+                    gallery: isEdit ? window.globalState.tempGallery : { photos: [], videos: [] }
                 };
 
                 // Se estiver editando e mudou o nome, libera o nome antigo
@@ -735,6 +826,14 @@
             document.getElementById('edit-avatar-preview').src = p.photoURL;
             document.getElementById('edit-name-input').value = p.name;
             window.globalState.pendingFile = null;
+            
+            // Carregar galeria existente para edição
+            window.globalState.tempGallery = {
+                photos: p.gallery?.photos ? [...p.gallery.photos] : [],
+                videos: p.gallery?.videos ? [...p.gallery.videos] : []
+            };
+            renderGalleryUI();
+            
             document.getElementById('modal-profile').classList.remove('hidden');
         };
 
@@ -954,6 +1053,14 @@
                 clearInterval(window.globalState.pppTimerInterval);
                 const elapsedSinceStart = Math.floor((Date.now() - room.timerStart) / 1000);
                 let localTimeLeft = Math.max(0, room.timeLimit - elapsedSinceStart);
+                
+                const expectedVotes = room.participants.length - 1;
+                const currentVotesCount = Object.keys(room.votes?.[target.uid] || {}).length;
+
+                // Avanço Automático: Se todos (menos o alvo) já votaram, encerra a rodada
+                if (expectedVotes > 0 && currentVotesCount >= expectedVotes) {
+                    localTimeLeft = 0;
+                }
                 
                 const checkAndNext = async () => {
                     if (isHost && localTimeLeft <= 0) {
