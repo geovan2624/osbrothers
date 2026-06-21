@@ -190,10 +190,6 @@
                     <button id="btn-google-login" class="w-full bg-osb-white text-osb-black py-4 rounded-lg font-bold flex items-center justify-center gap-3 hover:bg-gray-200 transition-colors active:scale-95 mb-4">
                         <i class="ph-bold ph-google-logo text-2xl"></i> Entrar com Google
                     </button>
-                    
-                    <button id="btn-anon-login" class="w-full btn-outline py-4 rounded-lg flex items-center justify-center gap-2">
-                        Entrar Anônimo <i class="ph-bold ph-mask-happy"></i>
-                    </button>
                 </section>
 
                 <!-- Tela de Configuração Inicial de Perfil -->
@@ -315,7 +311,16 @@
                         </button>
                     </div>
 
-                    <div class="flex gap-4 text-sm text-osb-gray card p-4 bg-transparent border-dashed mb-4">
+                    <div class="card p-6 md:p-8 mt-2">
+                        <h3 class="font-bold text-xl mb-4">Entrar em uma Sala</h3>
+                        <label class="block text-xs font-bold text-osb-gray uppercase tracking-wider mb-3">Código da Sala (4 Dígitos)</label>
+                        <input type="text" id="ppp-join-code" maxlength="4" pattern="\d*" inputmode="numeric" placeholder="0000" class="w-full bg-osb-black border border-osb-border rounded-lg p-3 text-osb-white focus:outline-none focus:border-osb-green transition-colors text-center text-3xl font-black tracking-widest mb-4 placeholder:text-osb-border">
+                        <button id="btn-join-ppp" class="w-full btn-outline py-4 rounded-lg text-lg flex justify-center items-center gap-2 border-osb-border text-osb-white hover:border-osb-green hover:text-osb-green">
+                            Entrar <i class="ph-bold ph-sign-in"></i>
+                        </button>
+                    </div>
+
+                    <div class="flex gap-4 text-sm text-osb-gray card p-4 bg-transparent border-dashed mb-4 mt-4">
                         <i class="ph-fill ph-info text-2xl text-osb-gray shrink-0"></i>
                         <p>Crie a sala e envie o link para a galera. Em cada rodada, uma pessoa do grupo aparece e os outros votam anonimamente. O tempo é curto!</p>
                     </div>
@@ -487,6 +492,17 @@
                 document.getElementById('side-nav').classList.add('md:hidden');
                 document.getElementById('mobile-header').classList.add('hidden');
                 document.querySelector('.main-content-wrapper').classList.remove('md:ml-64');
+                
+                // Pré-preencher com dados do Google
+                const gu = window.globalState.user;
+                if (gu) {
+                    if (gu.displayName && !document.getElementById('setup-name-input').value) {
+                        document.getElementById('setup-name-input').value = formatUsername(gu.displayName);
+                    }
+                    if (gu.photoURL && !window.globalState.pendingFile) {
+                        document.getElementById('setup-avatar-preview').src = gu.photoURL;
+                    }
+                }
             } else if (window.globalState.profile) {
                 document.getElementById('side-nav').classList.remove('md:hidden');
                 document.getElementById('mobile-header').classList.remove('hidden');
@@ -600,12 +616,6 @@
             }
         });
 
-        document.getElementById('btn-anon-login').addEventListener('click', async () => {
-            try {
-                await signInAnonymously(auth);
-            } catch(e) { window.showToast("Erro login anônimo", "error"); }
-        });
-
         // --- Configuração e Edição de Perfil ---
         const handleImageSelection = (e, previewId) => {
             const file = e.target.files[0];
@@ -654,7 +664,16 @@
                 }
 
                 // 2. Upload da imagem se existir nova
-                let photoURL = isEdit ? window.globalState.profile.photoURL : `https://api.dicebear.com/7.x/avataaars/svg?seed=${cleanName}`;
+                let photoURL = isEdit ? window.globalState.profile.photoURL : (user.photoURL || `https://api.dicebear.com/7.x/avataaars/svg?seed=${cleanName}`);
+                
+                // Verifica se a foto no preview veio do Google (e não foi alterada)
+                if (!isEdit && !window.globalState.pendingFile) {
+                    const previewSrc = document.getElementById('setup-avatar-preview').src;
+                    if (previewSrc && previewSrc.startsWith('http')) {
+                        photoURL = previewSrc;
+                    }
+                }
+
                 if (window.globalState.pendingFile) {
                     try {
                         photoURL = await uploadToCatbox(window.globalState.pendingFile);
@@ -746,7 +765,8 @@
             btn.disabled = true;
 
             try {
-                const roomId = Math.random().toString(36).substring(2, 8).toUpperCase();
+                // Gerar código de 4 dígitos (1000 - 9999)
+                const roomId = Math.floor(1000 + Math.random() * 9000).toString();
                 const roomRef = doc(db, getPublicPath('ppp_rooms'), roomId);
                 
                 await setDoc(roomRef, {
@@ -767,6 +787,36 @@
             }
             
             btn.innerHTML = 'Criar Sala <i class="ph-bold ph-play"></i>';
+            btn.disabled = false;
+        });
+
+        document.getElementById('btn-join-ppp').addEventListener('click', async () => {
+            const code = document.getElementById('ppp-join-code').value.trim();
+            if(code.length !== 4 || isNaN(code)) {
+                window.showToast("Código inválido (4 dígitos)", "error");
+                return;
+            }
+
+            const btn = document.getElementById('btn-join-ppp');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="ph-bold ph-circle-notch animate-spin"></i> Buscando...';
+            btn.disabled = true;
+
+            try {
+                const roomRef = doc(db, getPublicPath('ppp_rooms'), code);
+                const roomSnap = await getDoc(roomRef);
+
+                if(roomSnap.exists()) {
+                    window.navigate(`#/ppp/${code}`);
+                } else {
+                    window.showToast("Sala não encontrada", "error");
+                }
+            } catch(e) {
+                console.error(e);
+                window.showToast("Erro ao buscar sala", "error");
+            }
+
+            btn.innerHTML = originalText;
             btn.disabled = false;
         });
 
