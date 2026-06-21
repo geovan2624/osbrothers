@@ -5,11 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Os Brothers</title>
     
-    <!-- Bibliotecas e Estilos -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
     <script>
         tailwind.config = {
@@ -28,13 +27,15 @@
                             green: '#1ED760',
                             greenHover: '#1db954',
                             red: '#FF4136',
-                            blue: '#0074D9'
+                            blue: '#0074D9',
+                            yellow: '#FFDC00'
                         }
                     },
                     animation: {
                         'fade-in': 'fadeIn 0.2s ease-out',
                         'slide-up': 'slideUp 0.3s ease-out',
                         'shake': 'shake 0.5s cubic-bezier(.36,.07,.19,.97) both',
+                        'pulse-fast': 'pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite',
                     },
                     keyframes: {
                         fadeIn: { '0%': { opacity: '0' }, '100%': { opacity: '1' } },
@@ -63,7 +64,7 @@
             flex-direction: column;
             overflow: hidden;
             
-            /* Escudo Anti-Cópia */
+            /* Proteções Anti-Cópia da Tela */
             -webkit-touch-callout: none;
             -webkit-user-select: none;
             -moz-user-select: none;
@@ -73,15 +74,13 @@
 
         img, video { pointer-events: none; }
         button, input, .avatar-upload-container, .cursor-pointer { pointer-events: auto; }
-        .allow-click { pointer-events: auto !important; }
 
         .main-content-wrapper {
             flex: 1;
             display: flex;
             flex-direction: column;
             height: 100%;
-            /* Espaço fixo para a barra mobile com margem de segurança do iPhone */
-            padding-bottom: calc(4.5rem + env(safe-area-inset-bottom));
+            padding-bottom: 5rem; /* Ajustado para garantir que nada fique atrás da barra no mobile */
             position: relative;
         }
 
@@ -104,12 +103,12 @@
         .view-section { display: none; opacity: 0; }
         .view-section.active { display: flex; opacity: 1; animation: fadeIn 0.3s forwards; }
 
-        .btn-primary { background-color: #1ED760; color: #000000; font-weight: 700; transition: all 0.2s; }
+        .btn-primary { background-color: #1ED760; color: #000000; font-weight: 900; transition: all 0.2s; text-transform: uppercase; letter-spacing: 0.05em; }
         .btn-primary:hover:not(:disabled) { background-color: #1db954; transform: scale(1.02); }
         .btn-primary:active:not(:disabled) { transform: scale(0.98); }
         .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        .btn-outline { background-color: transparent; border: 2px solid #FFFFFF; color: #FFFFFF; font-weight: 700; transition: all 0.2s; }
+        .btn-outline { background-color: transparent; border: 2px solid #333; color: #FFFFFF; font-weight: 900; transition: all 0.2s; text-transform: uppercase; letter-spacing: 0.05em; }
         .btn-outline:hover:not(:disabled) { border-color: #1ED760; color: #1ED760; }
         .btn-outline:active:not(:disabled) { transform: scale(0.98); }
         .btn-outline:disabled { opacity: 0.5; cursor: not-allowed; }
@@ -124,23 +123,49 @@
         }
         .avatar-upload-container:hover .avatar-upload-overlay { opacity: 1; }
 
+        /* Estilos do Campo Minado Aprimorados */
         .ms-cell {
-            aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
-            font-weight: 900; font-size: 1.2rem; cursor: pointer; user-select: none; transition: all 0.1s;
+            aspect-ratio: 1;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 900; font-size: 1.2rem;
+            cursor: pointer; user-select: none;
+            border-radius: 8px;
+            transition: all 0.15s ease;
         }
-        .ms-hidden { background-color: #333333; border: 2px solid #555555; border-radius: 4px; }
-        .ms-hidden:hover { background-color: #444444; }
-        .ms-revealed { background-color: #121212; border: 1px solid #222222; border-radius: 4px; }
-        .ms-mine { background-color: #FF4136 !important; color: #FFF; animation: shake 0.5s; }
-        .ms-1 { color: #3b82f6; } .ms-2 { color: #10b981; } .ms-3 { color: #ef4444; } .ms-4 { color: #8b5cf6; }
+        .ms-hidden { 
+            background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
+            box-shadow: 2px 2px 6px #080808, -2px -2px 6px #2e2e2e;
+            border: 1px solid #333;
+        }
+        .ms-hidden:hover { transform: translateY(-2px); box-shadow: 3px 3px 8px #050505, -2px -2px 8px #333; }
+        .ms-hidden:active { transform: translateY(0); box-shadow: inset 2px 2px 5px #0a0a0a, inset -2px -2px 5px #222; }
+        .ms-revealed { 
+            background: #0f0f0f;
+            box-shadow: inset 3px 3px 6px #050505, inset -3px -3px 6px #1a1a1a;
+            border: 1px solid #111;
+        }
+        .ms-flagged { color: #FF4136; font-size: 1.5rem; text-shadow: 0 0 5px rgba(255,65,54,0.5); }
+        .ms-mine { background: #FF4136 !important; color: #FFF; box-shadow: 0 0 15px #FF4136; animation: shake 0.5s; border-color: #ff7675; }
+        
+        .ms-1 { color: #3b82f6; text-shadow: 0 0 8px rgba(59,130,246,0.4); } 
+        .ms-2 { color: #10b981; text-shadow: 0 0 8px rgba(16,185,129,0.4); } 
+        .ms-3 { color: #ef4444; text-shadow: 0 0 8px rgba(239,68,68,0.4); } 
+        .ms-4 { color: #8b5cf6; text-shadow: 0 0 8px rgba(139,92,246,0.4); }
+        .ms-5 { color: #f59e0b; text-shadow: 0 0 8px rgba(245,158,11,0.4); } 
+        .ms-6 { color: #06b6d4; text-shadow: 0 0 8px rgba(6,182,212,0.4); } 
+        .ms-7 { color: #ffffff; text-shadow: 0 0 8px rgba(255,255,255,0.4); } 
+        .ms-8 { color: #eab308; text-shadow: 0 0 8px rgba(234,179,8,0.4); }
 
+        /* Estilos do Jogo da Velha */
         .ttt-cell {
             aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
-            font-size: 3rem; font-weight: 900; cursor: pointer;
-            background-color: #121212; border-radius: 0.5rem; border: 2px solid #333; transition: all 0.2s;
+            font-size: 3.5rem; font-weight: 900; cursor: pointer;
+            background-color: #121212; border-radius: 1rem; border: 2px solid #333;
+            transition: all 0.2s; box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
         }
-        .ttt-cell:hover:not(:disabled) { background-color: #1E1E1E; border-color: #1ED760; }
-        .ttt-x { color: #1ED760; } .ttt-o { color: #0074D9; }
+        .ttt-cell:hover:not(:disabled) { background-color: #1E1E1E; border-color: #1ED760; transform: scale(1.02); }
+        .ttt-x { color: #1ED760; text-shadow: 0 0 15px rgba(30,215,96,0.4); }
+        .ttt-o { color: #0074D9; text-shadow: 0 0 15px rgba(0,116,217,0.4); }
     </style>
 </head>
 <body class="antialiased selection:bg-osb-green selection:text-black">
@@ -161,11 +186,8 @@
             <a href="#/ppp-lobby" class="nav-item flex items-center gap-3 px-4 py-3 rounded-lg text-osb-gray hover:text-osb-white hover:bg-osb-surface transition-colors" data-route="#/ppp">
                 <i class="ph-bold ph-play text-xl"></i> <span class="font-bold">P.P.P. Game</span>
             </a>
-            <a href="#/rank" class="nav-item flex items-center gap-3 px-4 py-3 rounded-lg text-osb-gray hover:text-osb-white hover:bg-osb-surface transition-colors" data-route="#/rank">
+            <a href="#/rank" class="nav-item flex items-center gap-3 px-4 py-3 rounded-lg text-osb-gray hover:text-osb-white hover:bg-osb-surface transition-colors text-osb-yellow" data-route="#/rank">
                 <i class="ph-bold ph-trophy text-xl"></i> <span class="font-bold">Ranking</span>
-            </a>
-            <a href="#/catbotox" class="nav-item flex items-center gap-3 px-4 py-3 rounded-lg text-osb-gray hover:text-osb-white hover:bg-osb-surface transition-colors" data-route="#/catbotox">
-                <i class="ph-bold ph-robot text-xl"></i> <span class="font-bold">Catbotox</span>
             </a>
         </div>
 
@@ -183,10 +205,10 @@
             <h1 class="text-lg font-black uppercase tracking-widest flex items-center gap-2">
                 <i class="ph-fill ph-users-three text-osb-green"></i> Os Brothers
             </h1>
-            <img id="mobile-avatar" src="" class="w-8 h-8 rounded-full border border-osb-border hidden cursor-pointer object-cover allow-click" onclick="openProfileModal()">
+            <img id="mobile-avatar" src="" class="w-8 h-8 rounded-full border border-osb-border hidden cursor-pointer object-cover" onclick="openProfileModal()">
         </header>
 
-        <main id="main-content" class="p-4 md:p-8 relative">
+        <main id="main-content" class="p-4 md:p-8">
             <div class="max-w-5xl mx-auto w-full h-full flex flex-col">
                 
                 <section id="view-loading" class="view-section active flex-col items-center justify-center flex-1 w-full min-h-[50vh]">
@@ -225,7 +247,7 @@
                     </div>
                 </section>
 
-                <section id="view-home" class="view-section flex-col gap-6 w-full flex-1 pb-10">
+                <section id="view-home" class="view-section flex-col gap-8 w-full flex-1">
                     <div class="flex items-end justify-between">
                         <div>
                             <p class="text-osb-gray uppercase tracking-widest text-xs font-bold mb-1">Bem-vindo de volta,</p>
@@ -233,57 +255,58 @@
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-4">
-                        <div class="flex flex-col gap-6">
-                            <!-- Salas Abertas Dashboard -->
-                            <div class="card p-6">
-                                <h3 class="font-bold text-lg mb-4 flex items-center gap-2 border-b border-osb-border pb-2">
-                                    <i class="ph-fill ph-broadcast text-osb-green"></i> Salas Ativas
-                                </h3>
-                                <div id="home-active-rooms" class="flex flex-col gap-3 max-h-[300px] overflow-y-auto hide-scrollbar">
-                                    <div class="flex justify-center py-4"><i class="ph-bold ph-circle-notch animate-spin text-osb-green text-2xl"></i></div>
-                                </div>
-                            </div>
+                    <div>
+                        <h3 class="text-sm font-bold text-osb-gray uppercase tracking-widest mb-4 border-b border-osb-border pb-2 flex justify-between items-center">
+                            <span>Brothers Online & Recentes</span>
+                            <span class="relative flex h-3 w-3"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-osb-green opacity-75"></span><span class="relative inline-flex rounded-full h-3 w-3 bg-osb-green"></span></span>
+                        </h3>
+                        <div id="online-users-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 min-h-[100px]">
+                            <p class="text-xs text-osb-gray italic">Buscando radar da galera...</p>
                         </div>
+                    </div>
 
-                        <div class="flex flex-col gap-6">
-                            <!-- Brothers Dashboard -->
-                            <div class="card p-6">
-                                <h3 class="font-bold text-lg mb-4 flex items-center gap-2 border-b border-osb-border pb-2">
-                                    <i class="ph-fill ph-users text-osb-green"></i> Diretório de Brothers
-                                </h3>
-                                <div id="home-online-users" class="flex flex-wrap gap-4 max-h-[300px] overflow-y-auto hide-scrollbar">
-                                    <div class="flex justify-center py-4 w-full"><i class="ph-bold ph-circle-notch animate-spin text-osb-green text-2xl"></i></div>
+                    <div>
+                        <h3 class="text-sm font-bold text-osb-gray uppercase tracking-widest mb-4 border-b border-osb-border pb-2 mt-4">Acesso Rápido</h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <button onclick="navigate('#/jogos')" class="card p-6 flex flex-col items-start gap-4 text-left group cursor-pointer">
+                                <div class="w-12 h-12 bg-osb-surface rounded-full flex items-center justify-center group-hover:bg-osb-green transition-colors pointer-events-none">
+                                    <i class="ph-fill ph-game-controller text-2xl group-hover:text-osb-black text-osb-white transition-colors"></i>
                                 </div>
-                            </div>
+                                <div class="pointer-events-none">
+                                    <h4 class="font-bold text-lg">Fliperama</h4>
+                                    <p class="text-osb-gray text-sm mt-1">Jogue com a galera. Campo Minado, Jogo da Velha e mais.</p>
+                                </div>
+                            </button>
+
+                            <button onclick="navigate('#/ppp-lobby')" class="card p-6 flex flex-col items-start gap-4 text-left group cursor-pointer">
+                                <div class="w-12 h-12 bg-osb-surface rounded-full flex items-center justify-center group-hover:bg-osb-green transition-colors pointer-events-none">
+                                    <i class="ph-fill ph-play text-2xl group-hover:text-osb-black text-osb-white transition-colors"></i>
+                                </div>
+                                <div class="pointer-events-none">
+                                    <h4 class="font-bold text-lg">P.P.P.</h4>
+                                    <p class="text-osb-gray text-sm mt-1">Pega, Passa ou Pensa. Crie uma sala e julgue seus amigos.</p>
+                                </div>
+                            </button>
                         </div>
                     </div>
                 </section>
 
-                <section id="view-rank" class="view-section flex-col gap-6 w-full flex-1">
+                <section id="view-rank" class="view-section flex-col gap-6 w-full flex-1 max-w-3xl mx-auto">
                     <div class="flex items-center gap-3 mb-2 border-b border-osb-border pb-4">
-                        <i class="ph-fill ph-trophy text-3xl text-osb-green"></i>
-                        <h2 class="text-2xl font-black uppercase tracking-widest">Ranking Global</h2>
-                    </div>
-                    <div class="card p-6">
-                        <p class="text-xs text-osb-gray uppercase tracking-widest mb-6 text-center">Top Jogadores em Vitórias</p>
-                        <div id="rank-list" class="flex flex-col gap-3">
-                            <div class="flex justify-center py-4 w-full"><i class="ph-bold ph-circle-notch animate-spin text-osb-green text-3xl"></i></div>
-                        </div>
-                    </div>
-                </section>
-
-                <section id="view-catbotox" class="view-section flex-col gap-4 flex-1 w-full">
-                    <div class="card p-4 flex items-center gap-4">
-                        <i class="ph-fill ph-robot text-3xl text-osb-green"></i>
+                        <i class="ph-fill ph-trophy text-4xl text-osb-yellow animate-bounce"></i>
                         <div>
-                            <h2 class="font-bold">Terminal Catbotox</h2>
-                            <p class="text-xs text-osb-gray font-mono">ID: 307daba6918600198381c9952</p>
+                            <h2 class="text-2xl font-black uppercase tracking-widest">Hall da Fama</h2>
+                            <p class="text-osb-gray text-xs font-bold uppercase tracking-widest mt-1">Top Players</p>
                         </div>
                     </div>
-                    <div class="flex-1 card flex flex-col items-center justify-center p-6 text-center border-dashed border-2 border-osb-border min-h-[40vh] mb-4">
-                        <i class="ph-bold ph-terminal-window text-4xl text-osb-gray mb-4"></i>
-                        <p class="text-osb-gray">Interface do bot preparada.<br><span class="text-xs mt-2 block">Insira o script do iframe/chatbase aqui.</span></p>
+                    <div class="card p-4 md:p-6 bg-osb-surface/50 border-osb-border">
+                        <div class="flex justify-between items-center text-xs font-bold text-osb-gray uppercase tracking-widest px-4 mb-4">
+                            <span>Posição / Brother</span>
+                            <span>Vitórias Globais</span>
+                        </div>
+                        <div id="rank-container" class="flex flex-col gap-3">
+                            <div class="flex items-center justify-center py-10"><i class="ph-bold ph-circle-notch animate-spin text-3xl text-osb-yellow"></i></div>
+                        </div>
                     </div>
                 </section>
 
@@ -321,46 +344,51 @@
                         </div>
                     </div>
 
-                    <div class="card p-6 md:p-8">
+                    <div class="card p-6 md:p-8 border-osb-border">
                         <h3 class="font-bold text-xl mb-6">Criar Nova Partida</h3>
                         <button id="btn-create-game" class="w-full btn-primary py-4 rounded-lg text-lg flex justify-center items-center gap-2 cursor-pointer">
                             Criar Sala <i class="ph-bold ph-play pointer-events-none"></i>
                         </button>
                     </div>
 
-                    <div class="card p-6 md:p-8 mt-2">
+                    <div class="card p-6 md:p-8 mt-2 border-osb-border">
                         <h3 class="font-bold text-xl mb-4">Entrar em Partida</h3>
                         <label class="block text-xs font-bold text-osb-gray uppercase tracking-wider mb-3">Código (4 Dígitos)</label>
-                        <input type="text" id="game-join-code" maxlength="4" pattern="\d*" inputmode="numeric" placeholder="0000" class="w-full bg-osb-black border border-osb-border rounded-lg p-3 text-osb-white focus:outline-none focus:border-osb-green transition-colors text-center text-3xl font-black tracking-widest mb-4 placeholder:text-osb-border cursor-pointer">
+                        <input type="text" id="game-join-code" maxlength="4" pattern="\d*" inputmode="numeric" placeholder="0000" class="w-full bg-osb-black border border-osb-border rounded-lg p-3 text-osb-white focus:outline-none focus:border-osb-green transition-colors text-center text-4xl font-black tracking-widest mb-4 placeholder:text-osb-border cursor-pointer">
                         <button id="btn-join-game" class="w-full btn-outline py-4 rounded-lg text-lg flex justify-center items-center gap-2 border-osb-border text-osb-white hover:border-osb-green hover:text-osb-green cursor-pointer">
-                            Entrar <i class="ph-bold ph-sign-in pointer-events-none"></i>
+                            Entrar na Sala <i class="ph-bold ph-sign-in pointer-events-none"></i>
                         </button>
                     </div>
                 </section>
 
-                <section id="view-tictactoe" class="view-section flex-col flex-1 w-full max-w-lg mx-auto relative pb-4">
+                <section id="view-tictactoe" class="view-section flex-col flex-1 w-full max-w-lg mx-auto relative pb-8">
                     <div class="flex justify-between items-center mb-6 pt-2">
                         <button onclick="leaveGameRoom('tictactoe')" class="text-osb-gray hover:text-osb-white flex items-center gap-2 text-sm font-bold uppercase tracking-widest cursor-pointer">
                             <i class="ph-bold ph-arrow-left"></i> Sair
                         </button>
-                        <span class="text-sm font-black font-mono bg-osb-green text-osb-black px-4 py-1 rounded-lg tracking-widest shadow-lg" id="ttt-room-id"></span>
+                        <span class="text-sm font-black font-mono bg-osb-blue text-osb-white px-4 py-1 rounded-lg tracking-widest shadow-[0_0_10px_rgba(0,116,217,0.5)]" id="ttt-room-id"></span>
                     </div>
                     <div id="ttt-dynamic-container" class="w-full flex-1 flex flex-col"></div>
                 </section>
 
-                <section id="view-minesweeper" class="view-section flex-col flex-1 w-full max-w-lg mx-auto relative pb-4">
+                <section id="view-minesweeper" class="view-section flex-col flex-1 w-full max-w-lg mx-auto relative pb-8">
                     <div class="flex justify-between items-center mb-4 pt-2">
                         <button onclick="leaveGameRoom('minesweeper')" class="text-osb-gray hover:text-osb-white flex items-center gap-2 text-sm font-bold uppercase tracking-widest cursor-pointer">
                             <i class="ph-bold ph-arrow-left"></i> Sair
                         </button>
-                        <span class="text-sm font-black font-mono bg-osb-green text-osb-black px-4 py-1 rounded-lg tracking-widest shadow-lg" id="ms-room-id"></span>
+                        <span class="text-sm font-black font-mono bg-osb-red text-osb-white px-4 py-1 rounded-lg tracking-widest shadow-[0_0_10px_rgba(255,65,54,0.5)]" id="ms-room-id"></span>
+                    </div>
+                    <!-- Controls para mobile -->
+                    <div id="ms-controls-container" class="hidden mb-4 bg-osb-black p-1 rounded-xl border border-osb-border mx-auto max-w-[320px] w-full flex">
+                        <button onclick="setMsMode('dig')" id="btn-ms-dig" class="flex-1 py-2 rounded-lg font-bold text-xs uppercase tracking-widest transition-all bg-osb-surface text-osb-white border border-osb-border shadow-inner"><i class="ph-bold ph-pickaxe mr-1"></i> Escavar</button>
+                        <button onclick="setMsMode('flag')" id="btn-ms-flag" class="flex-1 py-2 rounded-lg font-bold text-xs uppercase tracking-widest transition-all text-osb-gray hover:text-osb-white"><i class="ph-fill ph-flag mr-1 text-osb-red"></i> Marcar</button>
                     </div>
                     <div id="ms-dynamic-container" class="w-full flex-1 flex flex-col"></div>
                 </section>
 
                 <section id="view-ppp-lobby" class="view-section flex-col gap-6 w-full max-w-2xl mx-auto flex-1 py-4">
                     <div class="text-center mb-4">
-                        <h2 class="text-5xl font-black tracking-tighter">P.P.P.</h2>
+                        <h2 class="text-5xl font-black tracking-tighter text-osb-white" style="text-shadow: 2px 2px 0px #1ED760;">P.P.P.</h2>
                         <p class="text-osb-green font-bold tracking-widest uppercase text-xs mt-2">Pega, Passa ou Pensa</p>
                     </div>
 
@@ -380,15 +408,15 @@
                     <div class="card p-6 md:p-8 mt-2">
                         <h3 class="font-bold text-xl mb-4">Entrar em uma Sala</h3>
                         <label class="block text-xs font-bold text-osb-gray uppercase tracking-wider mb-3">Código (4 Dígitos)</label>
-                        <input type="text" id="ppp-join-code" maxlength="4" pattern="\d*" inputmode="numeric" placeholder="0000" class="w-full bg-osb-black border border-osb-border rounded-lg p-3 text-osb-white focus:outline-none focus:border-osb-green transition-colors text-center text-3xl font-black tracking-widest mb-4 placeholder:text-osb-border cursor-pointer">
+                        <input type="text" id="ppp-join-code" maxlength="4" pattern="\d*" inputmode="numeric" placeholder="0000" class="w-full bg-osb-black border border-osb-border rounded-lg p-3 text-osb-white focus:outline-none focus:border-osb-green transition-colors text-center text-4xl font-black tracking-widest mb-4 placeholder:text-osb-border cursor-pointer">
                         <button id="btn-join-ppp" class="w-full btn-outline py-4 rounded-lg text-lg flex justify-center items-center gap-2 border-osb-border text-osb-white hover:border-osb-green hover:text-osb-green cursor-pointer">
                             Entrar <i class="ph-bold ph-sign-in pointer-events-none"></i>
                         </button>
                     </div>
                 </section>
 
-                <section id="view-ppp-room" class="view-section flex-col flex-1 w-full max-w-3xl mx-auto relative pb-4">
-                    <div class="flex justify-between items-center mb-4 pt-2">
+                <section id="view-ppp-room" class="view-section flex-col flex-1 w-full max-w-3xl mx-auto relative pb-8">
+                    <div class="flex justify-between items-center mb-4 pt-2 shrink-0">
                         <button onclick="leavePPPRoom()" class="text-osb-gray hover:text-osb-white flex items-center gap-2 text-sm font-bold uppercase tracking-widest transition-colors cursor-pointer">
                             <i class="ph-bold ph-arrow-left"></i> Sair
                         </button>
@@ -396,34 +424,43 @@
                             <button onclick="document.getElementById('modal-room-players').classList.remove('hidden')" class="bg-osb-surface border border-osb-border text-osb-white p-1.5 rounded-lg flex items-center gap-2 hover:border-osb-gray transition-colors cursor-pointer">
                                 <i class="ph-bold ph-users text-lg pointer-events-none"></i>
                             </button>
-                            <span class="text-sm font-black font-mono bg-osb-green text-osb-black px-4 py-1 rounded-lg tracking-widest shadow-lg" id="room-id-display"></span>
+                            <span class="text-sm font-black font-mono bg-osb-green text-osb-black px-4 py-1 rounded-lg tracking-widest shadow-[0_0_10px_rgba(30,215,96,0.5)]" id="room-id-display"></span>
                         </div>
                     </div>
-                    <div id="ppp-dynamic-container" class="w-full flex-1 flex flex-col"></div>
+                    <div id="ppp-dynamic-container" class="w-full flex-1 flex flex-col min-h-0"></div>
                 </section>
 
             </div>
         </main>
     </div>
 
-    <!-- Nova Barra Mobile Corrigida -->
-    <nav id="bottom-nav" class="md:hidden bg-osb-black border-t border-osb-border w-full fixed bottom-0 left-0 z-50 flex items-center justify-around h-[4.5rem]" style="padding-bottom: env(safe-area-inset-bottom);">
-        <a href="#/inicio" class="nav-item flex flex-col items-center justify-center flex-1 h-full text-osb-gray hover:text-osb-white transition-colors" data-route="#/inicio">
-            <i class="ph-fill ph-house text-2xl mb-1 pointer-events-none"></i><span class="text-[9px] font-bold uppercase tracking-wider pointer-events-none">Início</span>
+    <nav id="bottom-nav" class="md:hidden flex bg-osb-black border-t border-osb-border w-full fixed bottom-0 z-50 h-[4.5rem]">
+        <a href="#/inicio" class="nav-item flex-1 flex flex-col items-center justify-center text-osb-gray hover:text-osb-white transition-colors" data-route="#/inicio">
+            <i class="ph-fill ph-house text-[22px] mb-1 pointer-events-none"></i><span class="text-[10px] font-bold uppercase tracking-wider pointer-events-none">Início</span>
         </a>
-        <a href="#/jogos" class="nav-item flex flex-col items-center justify-center flex-1 h-full text-osb-gray hover:text-osb-white transition-colors" data-route="#/jogos">
-            <i class="ph-fill ph-game-controller text-2xl mb-1 pointer-events-none"></i><span class="text-[9px] font-bold uppercase tracking-wider pointer-events-none">Jogos</span>
+        <a href="#/jogos" class="nav-item flex-1 flex flex-col items-center justify-center text-osb-gray hover:text-osb-white transition-colors" data-route="#/jogos">
+            <i class="ph-fill ph-game-controller text-[22px] mb-1 pointer-events-none"></i><span class="text-[10px] font-bold uppercase tracking-wider pointer-events-none">Jogos</span>
         </a>
-        <a href="#/ppp-lobby" class="nav-item flex flex-col items-center justify-center flex-1 h-full text-osb-gray hover:text-osb-white transition-colors" data-route="#/ppp">
-            <i class="ph-fill ph-play text-2xl mb-1 pointer-events-none"></i><span class="text-[9px] font-bold uppercase tracking-wider pointer-events-none">PPP</span>
+        <a href="#/ppp-lobby" class="nav-item flex-1 flex flex-col items-center justify-center text-osb-gray hover:text-osb-white transition-colors" data-route="#/ppp">
+            <i class="ph-fill ph-play text-[22px] mb-1 pointer-events-none"></i><span class="text-[10px] font-bold uppercase tracking-wider pointer-events-none">PPP</span>
         </a>
-        <a href="#/rank" class="nav-item flex flex-col items-center justify-center flex-1 h-full text-osb-gray hover:text-osb-white transition-colors" data-route="#/rank">
-            <i class="ph-fill ph-trophy text-2xl mb-1 pointer-events-none"></i><span class="text-[9px] font-bold uppercase tracking-wider pointer-events-none">Rank</span>
-        </a>
-        <a href="#/catbotox" class="nav-item flex flex-col items-center justify-center flex-1 h-full text-osb-gray hover:text-osb-white transition-colors" data-route="#/catbotox">
-            <i class="ph-fill ph-robot text-2xl mb-1 pointer-events-none"></i><span class="text-[9px] font-bold uppercase tracking-wider pointer-events-none">Botox</span>
+        <a href="#/rank" class="nav-item flex-1 flex flex-col items-center justify-center text-osb-gray hover:text-osb-white transition-colors" data-route="#/rank">
+            <i class="ph-fill ph-trophy text-[22px] mb-1 pointer-events-none"></i><span class="text-[10px] font-bold uppercase tracking-wider pointer-events-none">Rank</span>
         </a>
     </nav>
+
+    <!-- Modal Entrada com Código Rápido -->
+    <div id="modal-fast-join" class="hidden fixed inset-0 z-[200] bg-black/90 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="card bg-osb-surface w-full max-w-sm p-6 relative animate-slide-up border-osb-border">
+            <button onclick="document.getElementById('modal-fast-join').classList.add('hidden')" class="absolute top-4 right-4 text-osb-gray hover:text-osb-white cursor-pointer"><i class="ph-bold ph-x text-2xl pointer-events-none"></i></button>
+            <h3 class="text-xl font-black uppercase mb-2 mt-2 pointer-events-none flex items-center gap-2"><i class="ph-fill ph-lock-key text-osb-green"></i> Sala Privada</h3>
+            <p id="fast-join-desc" class="text-sm text-osb-gray mb-6">Digite o código para entrar na sala do seu Brother.</p>
+            <input type="text" id="fast-join-code" maxlength="4" pattern="\d*" inputmode="numeric" placeholder="0000" class="w-full bg-osb-black border border-osb-border rounded-lg p-3 text-osb-white focus:outline-none focus:border-osb-green transition-colors text-center text-4xl font-black tracking-widest mb-4 cursor-pointer">
+            <button id="btn-confirm-fast-join" class="w-full btn-primary py-3 rounded-lg font-black text-lg flex items-center justify-center gap-2 cursor-pointer">
+                Entrar <i class="ph-bold ph-sign-in"></i>
+            </button>
+        </div>
+    </div>
 
     <div id="modal-profile" class="hidden fixed inset-0 z-[100] bg-black/90 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="card bg-osb-surface w-full max-w-sm p-6 relative animate-slide-up">
@@ -435,16 +472,16 @@
                     <img id="edit-avatar-preview" src="" class="w-24 h-24 rounded-full border-2 border-osb-border object-cover bg-osb-black pointer-events-none">
                     <div class="avatar-upload-overlay pointer-events-none"><i class="ph-bold ph-camera text-osb-white text-2xl"></i></div>
                 </div>
-                <p class="text-[10px] text-osb-gray mt-2 uppercase tracking-widest text-center pointer-events-none">Alterar Foto de Perfil</p>
+                <p class="text-[10px] text-osb-gray mt-2 uppercase tracking-widest text-center pointer-events-none">Alterar Foto</p>
             </div>
             <div class="w-full mb-4">
                 <label class="block text-xs font-bold text-osb-gray uppercase tracking-wider mb-2">Vulgo (Único)</label>
                 <input type="text" id="edit-name-input" class="w-full bg-osb-black border border-osb-border rounded-lg p-3 text-osb-white focus:outline-none focus:border-osb-green transition-colors lowercase cursor-pointer">
             </div>
             <button id="btn-save-profile" class="w-full btn-primary py-3 rounded-lg flex items-center justify-center gap-2 mb-4 mt-6 cursor-pointer">
-                Salvar Alterações <i class="ph-bold ph-floppy-disk pointer-events-none"></i>
+                Salvar <i class="ph-bold ph-floppy-disk pointer-events-none"></i>
             </button>
-            <button onclick="logout()" class="w-full btn-outline border-osb-border text-osb-gray py-3 rounded-lg flex items-center justify-center gap-2 cursor-pointer">
+            <button onclick="logout()" class="w-full btn-outline border-osb-border text-osb-red hover:border-osb-red hover:text-osb-red py-3 rounded-lg flex items-center justify-center gap-2 cursor-pointer">
                 Sair da Conta <i class="ph-bold ph-sign-out pointer-events-none"></i>
             </button>
         </div>
@@ -465,12 +502,12 @@
         <button class="absolute top-4 right-4 text-osb-white hover:text-osb-green transition-colors cursor-pointer"><i class="ph-bold ph-x text-3xl pointer-events-none"></i></button>
     </div>
 
-    <div id="toast-container" class="fixed top-4 left-1/2 -translate-x-1/2 z-[200] flex flex-col gap-2 pointer-events-none w-full max-w-sm px-4"></div>
+    <div id="toast-container" class="fixed top-4 left-1/2 -translate-x-1/2 z-[500] flex flex-col gap-2 pointer-events-none w-full max-w-sm px-4"></div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signInWithCustomToken, signOut as firebaseSignOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc, onSnapshot, updateDoc, arrayUnion, serverTimestamp, deleteDoc, collection, query, orderBy, limit, increment } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, getDoc, onSnapshot, updateDoc, arrayUnion, serverTimestamp, deleteDoc, collection, getDocs, increment } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         const defaultFirebaseConfig = {
             apiKey: "AIzaSyBEOPV47HejSQf7snyDGVSzpjGx3GvoqkA",
@@ -488,373 +525,905 @@
 
         const appIdString = typeof __app_id !== 'undefined' ? __app_id : 'os-brothers';
         const isCanvas = typeof __firebase_config !== 'undefined';
-        function getPublicPath(collectionName) { return isCanvas ? `artifacts/${appIdString}/public/data/${collectionName}` : collectionName; }
+        
+        function getPublicPath(collectionName) {
+            return isCanvas ? `artifacts/${appIdString}/public/data/${collectionName}` : collectionName;
+        }
 
-        // Escudo Anti-Print / Cópia
+        // --- Escudo de Segurança ---
         document.addEventListener('contextmenu', event => event.preventDefault());
         document.addEventListener('dragstart', event => event.preventDefault());
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'PrintScreen' || (e.ctrlKey && (e.key === 'p' || e.key === 's' || e.key === 'c' || e.key === 'u')) || (e.metaKey && (e.key === 'p' || e.key === 's' || e.key === 'c' || e.key === 'u'))) {
+            if (e.key === 'PrintScreen' || 
+               (e.ctrlKey && (e.key === 'p' || e.key === 's' || e.key === 'c' || e.key === 'u')) ||
+               (e.metaKey && (e.key === 'p' || e.key === 's' || e.key === 'c' || e.key === 'u'))) {
                 e.preventDefault();
-                if(e.key === 'PrintScreen') { try { navigator.clipboard.writeText('Conteúdo protegido por Os Brothers.'); } catch(err){} }
+                if(e.key === 'PrintScreen') try { navigator.clipboard.writeText('Conteúdo protegido.'); } catch(err){}
                 window.showToast("Ação bloqueada por segurança 🛑", "warning");
             }
         });
 
-        // Estado Global
+        // --- Estado Global ---
         window.globalState = {
-            user: null, profile: null, pendingFile: null, confettiFired: false,
-            homeUnsubscribes: [], rankUnsubscribe: null,
-            pppSelectedTime: 15, currentRoomId: null, pppUnsubscribe: null, pppTimerInterval: null, localRoomMedia: { photos: [], videos: [] }, currentRoomData: null, startingGameTimer: null,
+            user: null, profile: null, pendingFile: null, confettiFired: false, winCounted: false,
+            msMode: 'dig', usersUnsubscribe: null,
+            
+            // PPP
+            pppSelectedTime: 15, currentRoomId: null, pppUnsubscribe: null, pppTimerInterval: null,
+            localRoomMedia: { photos: [], videos: [] }, currentRoomData: null, startingGameTimer: null,
+            
+            // Arcade Games
             currentGameType: null, gameRoomId: null, gameUnsubscribe: null, gameRoomData: null
         };
 
+        // --- Utilitários ---
         window.showToast = (message, type = 'success') => {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
             const borderCol = type === 'success' ? 'border-osb-green text-osb-green' : (type === 'error' ? 'border-osb-red text-osb-red' : 'border-osb-white text-osb-white');
-            toast.className = `bg-osb-surface border ${borderCol} px-4 py-3 rounded-lg text-sm font-bold shadow-lg animate-slide-up flex items-center gap-2`;
+            toast.className = `bg-osb-surface border ${borderCol} px-4 py-3 rounded-lg text-sm font-bold shadow-lg animate-slide-up flex items-center gap-2 pointer-events-auto`;
             toast.innerHTML = `<i class="ph-bold ${type === 'success' ? 'ph-check' : (type === 'error' ? 'ph-warning-circle' : 'ph-info')} text-lg"></i> ${message}`;
             container.appendChild(toast);
             setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 3000);
         };
 
         const formatUsername = (name) => name.trim().toLowerCase().replace(/[^a-z0-9_]/g, '');
-        window.openFullScreen = (url) => { document.getElementById('fullscreen-img-target').src = url; document.getElementById('modal-fullscreen-img').classList.remove('hidden'); };
 
-        // Animação Confete
-        window.triggerConfetti = () => { confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 }, colors: ['#1ED760', '#FFFFFF', '#0074D9', '#FF4136'], zIndex: 9999 }); };
+        window.openFullScreen = (url) => {
+            document.getElementById('fullscreen-img-target').src = url;
+            document.getElementById('modal-fullscreen-img').classList.remove('hidden');
+        };
 
-        // Uploads
+        window.scrollPPP = (dir) => {
+            const container = document.getElementById('ppp-media-scroll');
+            if(container) container.scrollBy({ left: dir * (container.clientWidth * 0.8), behavior: 'smooth' });
+        };
+
+        window.setMsMode = (mode) => {
+            window.globalState.msMode = mode;
+            const btnDig = document.getElementById('btn-ms-dig');
+            const btnFlag = document.getElementById('btn-ms-flag');
+            if(mode === 'dig') {
+                btnDig.className = "flex-1 py-2 rounded-lg font-bold text-xs uppercase tracking-widest transition-all bg-osb-surface text-osb-white border border-osb-border shadow-inner";
+                btnFlag.className = "flex-1 py-2 rounded-lg font-bold text-xs uppercase tracking-widest transition-all text-osb-gray hover:text-osb-white";
+            } else {
+                btnFlag.className = "flex-1 py-2 rounded-lg font-bold text-xs uppercase tracking-widest transition-all bg-osb-surface text-osb-white border border-osb-border shadow-inner";
+                btnDig.className = "flex-1 py-2 rounded-lg font-bold text-xs uppercase tracking-widest transition-all text-osb-gray hover:text-osb-white";
+            }
+        };
+
+        // --- Atividade Recente (Online Status) ---
+        window.updateActivity = async (activityDesc, roomCode = null, gameType = null) => {
+            if(!window.globalState.user || !window.globalState.profile) return;
+            try {
+                const profileRef = doc(db, getPublicPath('users'), window.globalState.user.uid);
+                await updateDoc(profileRef, { 
+                    activity: activityDesc, 
+                    currentRoomId: roomCode, 
+                    currentRoomType: gameType,
+                    lastActive: serverTimestamp() 
+                });
+            } catch(e) {}
+        };
+
+        // Heartbeat a cada 1 minuto
+        setInterval(() => { if(window.location.hash.startsWith('#/inicio')) window.updateActivity('Navegando no Menu'); }, 60000);
+
+        // --- Upload ---
         async function uploadToImgur(file) {
             const formData = new FormData(); formData.append('image', file);
             try {
-                const response = await fetch('https://api.imgur.com/3/image', { method: 'POST', headers: { Authorization: 'Client-ID 513bb727cecf9ac' }, body: formData });
-                const data = await response.json(); if (!data.success) throw new Error('Falha no Imgur'); return data.data.link;
+                const response = await fetch('https://api.imgur.com/3/image', {
+                    method: 'POST', headers: { Authorization: 'Client-ID 513bb727cecf9ac' }, body: formData
+                });
+                const data = await response.json();
+                if (!data.success) throw new Error('Falha no upload da imagem no Imgur');
+                return data.data.link;
             } catch (err) { throw err; }
         }
+
         async function uploadToCatbox(file) {
-            const formData = new FormData(); formData.append('reqtype', 'fileupload'); formData.append('fileToUpload', file); formData.append('userhash', '307daba6918600198381c9952');
+            const formData = new FormData();
+            formData.append('reqtype', 'fileupload'); formData.append('fileToUpload', file); formData.append('userhash', '307daba6918600198381c9952');
             try {
-                const targetUrl = 'https://catbox.moe/user/api.php'; const proxyUrl = 'https://corsproxy.io/?' + encodeURIComponent(targetUrl);
+                const proxyUrl = 'https://corsproxy.io/?' + encodeURIComponent('https://catbox.moe/user/api.php');
                 const response = await fetch(proxyUrl, { method: 'POST', body: formData });
-                if (!response.ok) throw new Error('Falha no upload'); return (await response.text()).trim();
+                if (!response.ok) throw new Error('Falha no upload de vídeo');
+                return (await response.text()).trim();
             } catch (err) { throw err; }
         }
-
-        // Add user Win
-        window.registerUserWin = async (winnerUid) => {
-            if(!winnerUid || winnerUid === 'draw') return;
-            try { await updateDoc(doc(db, getPublicPath('users'), winnerUid), { wins: increment(1) }); } catch(e) {}
-        };
-
-        // Escutas Tela Inicio
-        function startHomeListeners() {
-            stopHomeListeners();
-            // Users Online
-            window.globalState.homeUnsubscribes.push(onSnapshot(collection(db, getPublicPath('users')), snap => {
-                let html = '';
-                snap.forEach(d => { const u = d.data(); html += `<div class="flex flex-col items-center gap-1 w-[4.5rem]"><img src="${u.photoURL}" class="w-12 h-12 rounded-full border-2 border-osb-green object-cover"><span class="text-[10px] truncate w-full text-center text-osb-gray font-bold">${u.name}</span></div>`; });
-                document.getElementById('home-online-users').innerHTML = html || '<p class="text-xs text-osb-gray">Nenhum brother encontrado.</p>';
-            }));
-            
-            const renderRooms = () => {
-                let html = ''; const allRooms = [...(window.homeRooms.ttt||[]), ...(window.homeRooms.ms||[]), ...(window.homeRooms.ppp||[])];
-                allRooms.sort((a,b) => (b.createdAt?.toMillis()||0) - (a.createdAt?.toMillis()||0));
-                allRooms.forEach(r => {
-                    const isP = r.status === 'playing'; const col = isP ? 'text-osb-gray' : 'text-osb-green'; const icon = r.gameType === 'ttt' ? 'ph-hash' : (r.gameType === 'ms' ? 'ph-bomb' : 'ph-play');
-                    html += `<div class="flex items-center justify-between p-3 bg-osb-black border border-osb-border rounded-lg"><div class="flex items-center gap-3"><i class="ph-fill ${icon} text-2xl ${col}"></i><div><span class="text-[10px] font-bold uppercase tracking-widest ${col}">${r.gameName}</span><div class="text-sm font-bold truncate max-w-[120px]">${r.hostName}'s Room</div></div></div><div class="text-right"><span class="text-[10px] uppercase text-osb-gray block">${isP?'Em Andamento':'Aguardando'}</span><span class="font-mono font-black tracking-widest text-osb-white text-lg bg-osb-surface px-2 py-0.5 rounded">${r.id}</span></div></div>`;
-                });
-                document.getElementById('home-active-rooms').innerHTML = html || '<p class="text-xs text-osb-gray py-4">Nenhuma sala ativa. Crie uma para jogar!</p>';
-            };
-
-            window.homeRooms = { ttt: [], ms: [], ppp: [] };
-            window.globalState.homeUnsubscribes.push(onSnapshot(collection(db, getPublicPath('games_tictactoe')), snap => { window.homeRooms.ttt = snap.docs.map(d=>({ ...d.data(), gameType:'ttt', gameName: 'Jogo da Velha', hostName: d.data().players[0]?.name })).filter(r => r.status !== 'finished'); renderRooms(); }));
-            window.globalState.homeUnsubscribes.push(onSnapshot(collection(db, getPublicPath('games_minesweeper')), snap => { window.homeRooms.ms = snap.docs.map(d=>({ ...d.data(), gameType:'ms', gameName: 'Campo Minado', hostName: d.data().players[0]?.name })).filter(r => r.status !== 'finished'); renderRooms(); }));
-            window.globalState.homeUnsubscribes.push(onSnapshot(collection(db, getPublicPath('ppp_rooms')), snap => { window.homeRooms.ppp = snap.docs.map(d=>({ ...d.data(), gameType:'ppp', gameName: 'P.P.P.', hostName: d.data().participants[0]?.name })).filter(r => r.status !== 'finished'); renderRooms(); }));
-        }
-        function stopHomeListeners() { window.globalState.homeUnsubscribes.forEach(u=>u()); window.globalState.homeUnsubscribes = []; }
-
-        // Escuta Tela Rank
-        function startRankListener() {
-            if(window.globalState.rankUnsubscribe) window.globalState.rankUnsubscribe();
-            window.globalState.rankUnsubscribe = onSnapshot(collection(db, getPublicPath('users')), snap => {
-                let users = []; snap.forEach(doc => users.push(doc.data()));
-                users.sort((a,b) => (b.wins || 0) - (a.wins || 0));
-                let html = ''; let pos = 1;
-                users.forEach(u => {
-                    const bc = pos===1 ? 'border-[#FFD700]' : (pos===2 ? 'border-[#C0C0C0]' : (pos===3 ? 'border-[#CD7F32]' : 'border-osb-border'));
-                    const tc = pos===1 ? 'text-[#FFD700]' : (pos===2 ? 'text-[#C0C0C0]' : (pos===3 ? 'text-[#CD7F32]' : 'text-osb-gray'));
-                    html += `<div class="flex items-center justify-between p-4 bg-osb-black border border-osb-border rounded-xl"><div class="flex items-center gap-4"><span class="text-2xl font-black ${tc} w-6 text-center">${pos}</span><img src="${u.photoURL}" class="w-12 h-12 rounded-full border-2 ${bc} object-cover"><span class="font-bold text-lg uppercase truncate max-w-[120px]">${u.name}</span></div><div class="text-right"><span class="block text-2xl font-black text-osb-white">${u.wins || 0}</span><span class="text-[10px] uppercase tracking-widest text-osb-gray">Vitórias</span></div></div>`;
-                    pos++;
-                });
-                document.getElementById('rank-list').innerHTML = html || '<p>Nenhum rank disponível.</p>';
-            });
-        }
-        function stopRankListener() { if(window.globalState.rankUnsubscribe) { window.globalState.rankUnsubscribe(); window.globalState.rankUnsubscribe = null; } }
 
         window.navigate = (hash) => { window.location.hash = hash; };
 
-        const renderRoute = () => {
+        const renderRoute = async () => {
             const hash = window.location.hash || '#/inicio';
             document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
-            stopHomeListeners(); stopRankListener(); window.globalState.confettiFired = false;
 
             if (!window.globalState.user) {
-                document.getElementById('view-auth').classList.add('active'); document.getElementById('side-nav').classList.add('md:hidden'); document.getElementById('mobile-header').classList.add('hidden'); document.querySelector('.main-content-wrapper').classList.remove('md:ml-64');
+                document.getElementById('view-auth').classList.add('active');
+                document.getElementById('side-nav').classList.add('md:hidden');
+                document.getElementById('mobile-header').classList.add('hidden');
+                document.querySelector('.main-content-wrapper').classList.remove('md:ml-64');
             } else if (!window.globalState.profile && hash !== '#/loading') {
-                document.getElementById('view-setup-profile').classList.add('active'); document.getElementById('side-nav').classList.add('md:hidden'); document.getElementById('mobile-header').classList.add('hidden'); document.querySelector('.main-content-wrapper').classList.remove('md:ml-64');
+                document.getElementById('view-setup-profile').classList.add('active');
+                document.getElementById('side-nav').classList.add('md:hidden');
+                document.getElementById('mobile-header').classList.add('hidden');
+                document.querySelector('.main-content-wrapper').classList.remove('md:ml-64');
+                
                 const gu = window.globalState.user;
-                if (gu) {
-                    if (gu.displayName && !document.getElementById('setup-name-input').value) document.getElementById('setup-name-input').value = formatUsername(gu.displayName);
-                    if (gu.photoURL && !window.globalState.pendingFile) document.getElementById('setup-avatar-preview').src = gu.photoURL;
-                }
+                if (gu && gu.displayName && !document.getElementById('setup-name-input').value) document.getElementById('setup-name-input').value = formatUsername(gu.displayName);
+                if (gu && gu.photoURL && !window.globalState.pendingFile) document.getElementById('setup-avatar-preview').src = gu.photoURL;
             } else if (window.globalState.profile) {
-                document.getElementById('side-nav').classList.remove('md:hidden'); document.getElementById('mobile-header').classList.remove('hidden'); document.querySelector('.main-content-wrapper').classList.add('md:ml-64');
+                document.getElementById('side-nav').classList.remove('md:hidden');
+                document.getElementById('mobile-header').classList.remove('hidden');
+                document.querySelector('.main-content-wrapper').classList.add('md:ml-64');
                 
                 if (hash.startsWith('#/inicio')) {
-                    document.getElementById('view-home').classList.add('active'); document.getElementById('home-user-name').innerText = window.globalState.profile.name; startHomeListeners();
-                } else if (hash.startsWith('#/rank')) {
-                    document.getElementById('view-rank').classList.add('active'); startRankListener();
+                    document.getElementById('view-home').classList.add('active');
+                    document.getElementById('home-user-name').innerText = window.globalState.profile.name;
+                    window.updateActivity('Navegando no Menu');
+                    loadOnlineUsers();
                 } else if (hash.startsWith('#/jogos')) {
                     document.getElementById('view-games').classList.add('active');
+                    window.updateActivity('Escolhendo um Jogo');
                 } else if (hash.startsWith('#/game-lobby/')) {
-                    const gameType = hash.split('/')[2]; window.globalState.currentGameType = gameType; document.getElementById('view-game-lobby').classList.add('active'); document.getElementById('game-lobby-title').innerText = gameType === 'tictactoe' ? 'Jogo da Velha' : 'Campo Minado'; cleanupGameRoom();
+                    const gameType = hash.split('/')[2];
+                    window.globalState.currentGameType = gameType;
+                    document.getElementById('view-game-lobby').classList.add('active');
+                    document.getElementById('game-lobby-title').innerText = gameType === 'tictactoe' ? 'Jogo da Velha' : 'Campo Minado';
+                    cleanupGameRoom();
+                    window.updateActivity(`No Lobby: ${gameType === 'tictactoe' ? 'Jogo da Velha' : 'Campo Minado'}`);
                 } else if (hash.startsWith('#/tictactoe/')) {
-                    document.getElementById('view-tictactoe').classList.add('active'); const roomId = hash.split('/')[2]; document.getElementById('ttt-room-id').innerText = `SALA: ${roomId}`; if (roomId !== window.globalState.gameRoomId) initGameRoom('tictactoe', roomId);
+                    document.getElementById('view-tictactoe').classList.add('active');
+                    const roomId = hash.split('/')[2];
+                    document.getElementById('ttt-room-id').innerText = `SALA: ${roomId}`;
+                    if (roomId !== window.globalState.gameRoomId) initGameRoom('tictactoe', roomId);
                 } else if (hash.startsWith('#/minesweeper/')) {
-                    document.getElementById('view-minesweeper').classList.add('active'); const roomId = hash.split('/')[2]; document.getElementById('ms-room-id').innerText = `SALA: ${roomId}`; if (roomId !== window.globalState.gameRoomId) initGameRoom('minesweeper', roomId);
+                    document.getElementById('view-minesweeper').classList.add('active');
+                    const roomId = hash.split('/')[2];
+                    document.getElementById('ms-room-id').innerText = `SALA: ${roomId}`;
+                    if (roomId !== window.globalState.gameRoomId) initGameRoom('minesweeper', roomId);
                 } else if (hash.startsWith('#/ppp-lobby')) {
-                    document.getElementById('view-ppp-lobby').classList.add('active'); cleanupPPPRoom();
+                    document.getElementById('view-ppp-lobby').classList.add('active');
+                    cleanupPPPRoom();
+                    window.updateActivity('No Lobby: P.P.P.');
                 } else if (hash.startsWith('#/ppp/')) {
-                    document.getElementById('view-ppp-room').classList.add('active'); const roomId = hash.split('/')[2]; document.getElementById('room-id-display').innerText = `SALA: ${roomId}`; if (roomId !== window.globalState.currentRoomId) initPPPRoom(roomId);
-                } else { window.location.hash = '#/inicio'; return; }
+                    document.getElementById('view-ppp-room').classList.add('active');
+                    const roomId = hash.split('/')[2];
+                    document.getElementById('room-id-display').innerText = `SALA: ${roomId}`;
+                    if (roomId !== window.globalState.currentRoomId) initPPPRoom(roomId);
+                } else if (hash.startsWith('#/rank')) {
+                    document.getElementById('view-rank').classList.add('active');
+                    window.updateActivity('Olhando o Ranking');
+                    loadRanking();
+                } else {
+                    window.location.hash = '#/inicio'; return;
+                }
             }
 
             document.querySelectorAll('.nav-item').forEach(item => {
-                if (hash.startsWith(item.dataset.route)) { item.classList.add('text-osb-white', 'bg-osb-surface'); item.classList.remove('text-osb-gray'); item.querySelector('i').classList.add('text-osb-green'); } 
-                else { item.classList.remove('text-osb-white', 'bg-osb-surface'); item.classList.add('text-osb-gray'); item.querySelector('i').classList.remove('text-osb-green'); }
+                if (hash.startsWith(item.dataset.route)) {
+                    item.classList.add('text-osb-white', 'bg-osb-surface'); item.classList.remove('text-osb-gray');
+                    item.querySelector('i').classList.add('text-osb-green'); if(item.dataset.route === '#/rank') item.querySelector('i').classList.add('text-osb-yellow');
+                } else {
+                    item.classList.remove('text-osb-white', 'bg-osb-surface'); item.classList.add('text-osb-gray');
+                    item.querySelector('i').classList.remove('text-osb-green', 'text-osb-yellow');
+                }
             });
         };
+
         window.addEventListener('hashchange', renderRoute);
 
-        const initAuth = async () => { try { if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) await signInWithCustomToken(auth, __initial_auth_token); } catch (error) { window.showToast("Erro ao conectar base", "error"); } };
+        const initAuth = async () => {
+            try { if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) await signInWithCustomToken(auth, __initial_auth_token); } 
+            catch (error) { window.showToast("Erro ao conectar base", "error"); }
+        };
 
         onAuthStateChanged(auth, async (user) => {
             window.globalState.user = user;
             if (user) {
-                try { const snap = await getDoc(doc(db, getPublicPath('users'), user.uid)); if (snap.exists()) { window.globalState.profile = snap.data(); finishAuth(); } else { document.getElementById('view-loading').classList.remove('active'); renderRoute(); } } catch (e) { console.error(e); }
+                const profileRef = doc(db, getPublicPath('users'), user.uid);
+                try {
+                    const snap = await getDoc(profileRef);
+                    if (snap.exists()) { window.globalState.profile = snap.data(); finishAuth(); } 
+                    else { document.getElementById('view-loading').classList.remove('active'); renderRoute(); }
+                } catch (e) {}
             } else { window.globalState.profile = null; renderRoute(); }
         });
 
         const finishAuth = () => {
-            const p = window.globalState.profile; const deskProfile = document.getElementById('desktop-profile');
+            const p = window.globalState.profile;
+            const deskProfile = document.getElementById('desktop-profile');
             if(deskProfile) { deskProfile.classList.remove('hidden'); document.getElementById('desk-avatar').src = p.photoURL; document.getElementById('desk-name').innerText = p.name; }
-            const mobAvatar = document.getElementById('mobile-avatar'); if(mobAvatar) { mobAvatar.classList.remove('hidden'); mobAvatar.src = p.photoURL; }
-            document.getElementById('view-loading').classList.remove('active'); renderRoute();
+            const mobAvatar = document.getElementById('mobile-avatar');
+            if(mobAvatar) { mobAvatar.classList.remove('hidden'); mobAvatar.src = p.photoURL; }
+            document.getElementById('view-loading').classList.remove('active');
+            renderRoute();
         };
 
         window.logout = async () => { await firebaseSignOut(auth); closeProfileModal(); window.location.hash = '#/inicio'; window.location.reload(); }
-        document.getElementById('btn-google-login').addEventListener('click', async () => { try { await signInWithPopup(auth, new GoogleAuthProvider()); } catch (e) { window.showToast("Erro no Google Login", "error"); } });
+
+        document.getElementById('btn-google-login').addEventListener('click', async () => {
+            try { await signInWithPopup(auth, new GoogleAuthProvider()); } catch (e) { window.showToast("Erro no Google Login", "error"); }
+        });
 
         const handleImageSelection = (e, previewId) => {
-            const file = e.target.files[0]; if (file) {
-                if (file.size > 200 * 1024 * 1024) return window.showToast("Max 200MB", "error");
-                window.globalState.pendingFile = file; const reader = new FileReader(); reader.onload = (e) => { document.getElementById(previewId).src = e.target.result; }; reader.readAsDataURL(file);
+            const file = e.target.files[0];
+            if (file) {
+                if (file.size > 200 * 1024 * 1024) return window.showToast("Imagem muito grande", "error");
+                window.globalState.pendingFile = file;
+                const reader = new FileReader();
+                reader.onload = (e) => { document.getElementById(previewId).src = e.target.result; };
+                reader.readAsDataURL(file);
             }
         };
         document.getElementById('setup-avatar-input').addEventListener('change', (e) => handleImageSelection(e, 'setup-avatar-preview'));
         document.getElementById('edit-avatar-input').addEventListener('change', (e) => handleImageSelection(e, 'edit-avatar-preview'));
 
         async function saveProfileData(nameInputId, btnId, isEdit = false) {
-            const rawName = document.getElementById(nameInputId).value; const cleanName = formatUsername(rawName);
-            if(!cleanName || cleanName.length < 3) return window.showToast("Mínimo 3 caracteres", "error"); 
-            const user = window.globalState.user; if(!user) return;
-            const btn = document.getElementById(btnId); const originalText = btn.innerHTML; btn.innerHTML = '<i class="ph-bold ph-circle-notch animate-spin text-xl"></i> Salvando...'; btn.disabled = true;
+            const rawName = document.getElementById(nameInputId).value;
+            const cleanName = formatUsername(rawName);
+            if(!cleanName || cleanName.length < 3) return window.showToast("O vulgo deve ter 3+ caracteres", "error"); 
+
+            const user = window.globalState.user;
+            if(!user) return;
+
+            const btn = document.getElementById(btnId); const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="ph-bold ph-circle-notch animate-spin text-xl"></i> Salvando...'; btn.disabled = true;
 
             try {
-                const usernameRef = doc(db, getPublicPath('usernames'), cleanName); const usernameSnap = await getDoc(usernameRef);
-                if (usernameSnap.exists() && usernameSnap.data().uid !== user.uid) { window.showToast("Vulgo em uso!", "error"); btn.innerHTML = originalText; btn.disabled = false; return; }
-                let photoURL = isEdit ? window.globalState.profile.photoURL : (user.photoURL || `https://api.dicebear.com/7.x/avataaars/svg?seed=${cleanName}`);
-                if (!isEdit && !window.globalState.pendingFile) { const previewSrc = document.getElementById('setup-avatar-preview').src; if (previewSrc && previewSrc.startsWith('http')) photoURL = previewSrc; }
-                if (window.globalState.pendingFile) { try { photoURL = await uploadToImgur(window.globalState.pendingFile); } catch (e) { window.showToast("Erro upload foto", "error"); btn.innerHTML = originalText; btn.disabled = false; return; } }
+                const usernameRef = doc(db, getPublicPath('usernames'), cleanName);
+                const usernameSnap = await getDoc(usernameRef);
+                if (usernameSnap.exists() && usernameSnap.data().uid !== user.uid) {
+                    window.showToast("Este vulgo já está sendo usado!", "error");
+                    btn.innerHTML = originalText; btn.disabled = false; return;
+                }
 
-                const profileData = { uid: user.uid, name: cleanName, photoURL: photoURL, isAnonymous: user.isAnonymous, wins: isEdit ? window.globalState.profile.wins||0 : 0 };
+                let photoURL = isEdit ? window.globalState.profile.photoURL : (user.photoURL || `https://api.dicebear.com/7.x/avataaars/svg?seed=${cleanName}`);
+                if (!isEdit && !window.globalState.pendingFile) {
+                    const previewSrc = document.getElementById('setup-avatar-preview').src;
+                    if (previewSrc && previewSrc.startsWith('http')) photoURL = previewSrc;
+                }
+
+                if (window.globalState.pendingFile) {
+                    try { photoURL = await uploadToImgur(window.globalState.pendingFile); } 
+                    catch (e) { window.showToast("Erro upload foto", "error"); btn.innerHTML = originalText; btn.disabled = false; return; }
+                }
+
+                const profileRef = doc(db, getPublicPath('users'), user.uid);
+                const profileData = { uid: user.uid, name: cleanName, photoURL: photoURL, isAnonymous: user.isAnonymous, wins: (window.globalState.profile?.wins || 0) };
+
                 if (isEdit && window.globalState.profile.name !== cleanName) await deleteDoc(doc(db, getPublicPath('usernames'), window.globalState.profile.name));
-                await setDoc(usernameRef, { uid: user.uid, createdAt: serverTimestamp() }); await setDoc(doc(db, getPublicPath('users'), user.uid), profileData);
+                await setDoc(usernameRef, { uid: user.uid, createdAt: serverTimestamp() });
+                await setDoc(profileRef, profileData, { merge: true });
                 
                 window.globalState.profile = profileData; window.globalState.pendingFile = null;
-                if(isEdit) { closeProfileModal(); window.showToast("Perfil atualizado!", "success"); finishAuth(); } else { finishAuth(); }
-            } catch(e) { window.showToast("Erro ao salvar", "error"); }
+                if(isEdit) { closeProfileModal(); window.showToast("Perfil atualizado!", "success"); }
+                finishAuth();
+            } catch(e) { window.showToast("Erro ao salvar perfil", "error"); }
             btn.innerHTML = originalText; btn.disabled = false;
         }
+
         document.getElementById('btn-save-setup').addEventListener('click', () => saveProfileData('setup-name-input', 'btn-save-setup', false));
         document.getElementById('btn-save-profile').addEventListener('click', () => saveProfileData('edit-name-input', 'btn-save-profile', true));
 
-        window.openProfileModal = () => { const p = window.globalState.profile; if(!p) return; document.getElementById('edit-avatar-preview').src = p.photoURL; document.getElementById('edit-name-input').value = p.name; window.globalState.pendingFile = null; document.getElementById('modal-profile').classList.remove('hidden'); };
+        window.openProfileModal = () => {
+            const p = window.globalState.profile; if(!p) return;
+            document.getElementById('edit-avatar-preview').src = p.photoURL; document.getElementById('edit-name-input').value = p.name;
+            window.globalState.pendingFile = null; document.getElementById('modal-profile').classList.remove('hidden');
+        };
         window.closeProfileModal = () => document.getElementById('modal-profile').classList.add('hidden');
 
-        window.openGameLobby = (type) => navigate(`#/game-lobby/${type}`);
-        document.getElementById('btn-create-game').addEventListener('click', async () => {
-            const btn = document.getElementById('btn-create-game'); btn.innerHTML = '<i class="ph-bold ph-circle-notch animate-spin"></i> Criando...'; btn.disabled = true;
+        // --- Lógica de Rank & Online ---
+        async function loadRanking() {
+            const container = document.getElementById('rank-container');
             try {
-                const roomId = Math.floor(1000 + Math.random() * 9000).toString(); const gameType = window.globalState.currentGameType;
-                const baseData = { id: roomId, hostId: window.globalState.profile.uid, status: 'waiting', players: [{...window.globalState.profile, isDead: false}], createdAt: serverTimestamp() };
-                if (gameType === 'tictactoe') { baseData.board = Array(9).fill(''); baseData.turn = window.globalState.profile.uid; baseData.winner = null; } 
-                else if (gameType === 'minesweeper') { baseData.board = generateMinesweeperBoard(8, 8, 10); baseData.turn = window.globalState.profile.uid; baseData.winner = null; baseData.deadCount = 0; }
-                await setDoc(doc(db, getPublicPath(`games_${gameType}`), roomId), baseData); navigate(`#/${gameType}/${roomId}`);
+                const usersSnap = await getDocs(collection(db, getPublicPath('users')));
+                let usersList = [];
+                usersSnap.forEach(d => usersList.push(d.data()));
+                usersList.sort((a,b) => (b.wins || 0) - (a.wins || 0));
+                
+                if(usersList.length === 0) { container.innerHTML = `<p class="text-osb-gray text-center py-8">Nenhum guerreiro registrado.</p>`; return; }
+
+                container.innerHTML = usersList.slice(0, 50).map((u, i) => {
+                    let medal = i === 0 ? '<i class="ph-fill ph-medal text-osb-yellow text-2xl"></i>' : (i === 1 ? '<i class="ph-fill ph-medal text-gray-400 text-2xl"></i>' : (i === 2 ? '<i class="ph-fill ph-medal text-amber-700 text-2xl"></i>' : `<span class="text-osb-gray font-black w-6 text-center">#${i+1}</span>`));
+                    return `
+                        <div class="flex items-center justify-between p-3 bg-osb-black rounded-lg border ${i===0?'border-osb-yellow':(i===1?'border-gray-400':(i===2?'border-amber-700':'border-osb-border'))} hover:border-osb-green transition-colors">
+                            <div class="flex items-center gap-4">
+                                ${medal}
+                                <img src="${u.photoURL}" class="w-10 h-10 rounded-full object-cover border border-osb-surface">
+                                <span class="font-bold truncate max-w-[150px] md:max-w-xs ${u.uid===window.globalState.profile.uid?'text-osb-green':''}">${u.name}</span>
+                            </div>
+                            <span class="text-xl font-black bg-osb-surface px-4 py-1 rounded shadow-inner text-osb-white">${u.wins || 0}</span>
+                        </div>
+                    `;
+                }).join('');
+            } catch(e) { container.innerHTML = `<p class="text-osb-red text-center py-8">Erro ao buscar ranking.</p>`; }
+        }
+
+        function loadOnlineUsers() {
+            if(window.globalState.usersUnsubscribe) window.globalState.usersUnsubscribe();
+            const container = document.getElementById('online-users-container');
+            window.globalState.usersUnsubscribe = onSnapshot(collection(db, getPublicPath('users')), (snap) => {
+                if(!window.location.hash.startsWith('#/inicio')) return;
+                const now = Date.now();
+                let activeUsers = [];
+                snap.forEach(d => {
+                    const u = d.data();
+                    if(u.uid !== window.globalState.profile.uid && u.lastActive) {
+                        const lastTime = u.lastActive.toMillis ? u.lastActive.toMillis() : (u.lastActive.seconds * 1000);
+                        if (now - lastTime < 5 * 60 * 1000) activeUsers.push(u); // Ativos nos últimos 5 minutos
+                    }
+                });
+
+                if(activeUsers.length === 0) { container.innerHTML = `<div class="col-span-full card p-6 text-center border-dashed border-osb-border"><p class="text-osb-gray text-sm">Nenhum Brother online no radar.</p></div>`; return; }
+
+                container.innerHTML = activeUsers.map(u => {
+                    const isPlaying = u.currentRoomId && u.currentRoomType;
+                    const action = isPlaying ? `onclick="promptJoinRoom('${u.currentRoomType}', '${u.name}')"` : '';
+                    return `
+                        <div class="card p-4 flex items-center justify-between gap-3 ${isPlaying?'cursor-pointer hover:border-osb-green border-osb-border':'border-osb-surface opacity-80'}" ${action}>
+                            <div class="flex items-center gap-3 overflow-hidden">
+                                <div class="relative shrink-0">
+                                    <img src="${u.photoURL}" class="w-12 h-12 rounded-full object-cover border border-osb-surface">
+                                    <div class="absolute bottom-0 right-0 w-3 h-3 bg-osb-green border-2 border-osb-black rounded-full"></div>
+                                </div>
+                                <div class="flex flex-col overflow-hidden">
+                                    <span class="font-bold text-sm truncate">${u.name}</span>
+                                    <span class="text-[10px] text-osb-gray truncate uppercase tracking-widest flex items-center gap-1">${isPlaying ? '<i class="ph-fill ph-sword text-osb-red"></i> ' : ''}${u.activity || 'Online'}</span>
+                                </div>
+                            </div>
+                            ${isPlaying ? '<div class="shrink-0 bg-osb-surface p-2 rounded-lg text-osb-green"><i class="ph-bold ph-sign-in text-lg"></i></div>' : ''}
+                        </div>
+                    `;
+                }).join('');
+            });
+        }
+
+        window.promptJoinRoom = (gameType, userName) => {
+            window.globalState.fastJoinType = gameType;
+            document.getElementById('fast-join-desc').innerHTML = `Digite o código da sala de <b class="text-osb-white">${userName}</b> para entrar no jogo.`;
+            document.getElementById('fast-join-code').value = '';
+            document.getElementById('modal-fast-join').classList.remove('hidden');
+        };
+
+        document.getElementById('btn-confirm-fast-join').addEventListener('click', () => {
+            const code = document.getElementById('fast-join-code').value.trim();
+            if(code.length !== 4) return window.showToast("Código inválido (4 dígitos)", "error");
+            document.getElementById('modal-fast-join').classList.add('hidden');
+            
+            const gameType = window.globalState.fastJoinType;
+            window.globalState.currentGameType = gameType;
+            if(gameType === 'ppp') {
+                navigate(`#/ppp/${code}`);
+            } else {
+                navigate(`#/${gameType}/${code}`);
+            }
+        });
+
+        // --- Arcade Games ---
+        window.openGameLobby = (type) => navigate(`#/game-lobby/${type}`);
+
+        document.getElementById('btn-create-game').addEventListener('click', async () => {
+            const btn = document.getElementById('btn-create-game');
+            btn.innerHTML = '<i class="ph-bold ph-circle-notch animate-spin"></i> Criando...'; btn.disabled = true;
+
+            try {
+                const roomId = Math.floor(1000 + Math.random() * 9000).toString();
+                const gameType = window.globalState.currentGameType;
+                const roomRef = doc(db, getPublicPath(`games_${gameType}`), roomId);
+                
+                const baseData = {
+                    id: roomId, hostId: window.globalState.profile.uid, status: 'waiting',
+                    players: [{...window.globalState.profile, isDead: false}], createdAt: serverTimestamp()
+                };
+
+                if (gameType === 'tictactoe') {
+                    baseData.board = Array(9).fill(''); baseData.turn = window.globalState.profile.uid; baseData.winner = null;
+                } else if (gameType === 'minesweeper') {
+                    baseData.board = generateMinesweeperBoard(8, 8, 12); // Aumentado um pouco a dificuldade
+                    baseData.turn = window.globalState.profile.uid; baseData.winner = null; baseData.deadCount = 0;
+                }
+                
+                await setDoc(roomRef, baseData);
+                navigate(`#/${gameType}/${roomId}`);
             } catch (error) { window.showToast("Erro ao criar sala", "error"); }
             btn.innerHTML = 'Criar Sala <i class="ph-bold ph-play"></i>'; btn.disabled = false;
         });
 
         document.getElementById('btn-join-game').addEventListener('click', async () => {
-            const code = document.getElementById('game-join-code').value.trim(); if(code.length !== 4) return window.showToast("Código inválido", "error");
-            const btn = document.getElementById('btn-join-game'); const originalText = btn.innerHTML; btn.innerHTML = '<i class="ph-bold ph-circle-notch animate-spin"></i>'; btn.disabled = true;
-            try { const gameType = window.globalState.currentGameType; const snap = await getDoc(doc(db, getPublicPath(`games_${gameType}`), code)); if(snap.exists()) navigate(`#/${gameType}/${code}`); else window.showToast("Sala não encontrada", "error"); } catch(e) {}
+            const code = document.getElementById('game-join-code').value.trim();
+            if(code.length !== 4) return window.showToast("Código inválido", "error");
+            const btn = document.getElementById('btn-join-game'); const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="ph-bold ph-circle-notch animate-spin"></i> Entrando...'; btn.disabled = true;
+
+            try {
+                const gameType = window.globalState.currentGameType;
+                const roomSnap = await getDoc(doc(db, getPublicPath(`games_${gameType}`), code));
+                if(roomSnap.exists()) navigate(`#/${gameType}/${code}`);
+                else window.showToast("Sala não encontrada", "error");
+            } catch(e) { window.showToast("Erro", "error"); }
             btn.innerHTML = originalText; btn.disabled = false;
         });
 
-        window.cleanupGameRoom = () => { if(window.globalState.gameUnsubscribe) { window.globalState.gameUnsubscribe(); window.globalState.gameUnsubscribe = null; } window.globalState.gameRoomId = null; window.globalState.gameRoomData = null; const tC = document.getElementById('ttt-dynamic-container'); if(tC) tC.innerHTML = ''; const mC = document.getElementById('ms-dynamic-container'); if(mC) mC.innerHTML = ''; };
+        window.cleanupGameRoom = () => {
+            if(window.globalState.gameUnsubscribe) { window.globalState.gameUnsubscribe(); window.globalState.gameUnsubscribe = null; }
+            window.globalState.gameRoomId = null; window.globalState.gameRoomData = null; window.globalState.confettiFired = false; window.globalState.winCounted = false;
+            const tttC = document.getElementById('ttt-dynamic-container'); if(tttC) tttC.innerHTML = '';
+            const msC = document.getElementById('ms-dynamic-container'); if(msC) msC.innerHTML = '';
+            document.getElementById('ms-controls-container').classList.add('hidden');
+        };
+
         window.leaveGameRoom = async (type) => {
             if(!window.globalState.gameRoomId || !window.globalState.profile) return navigate(`#/game-lobby/${type}`);
-            const roomRef = doc(db, getPublicPath(`games_${type}`), window.globalState.gameRoomId); const myUid = window.globalState.profile.uid;
-            try { const snap = await getDoc(roomRef); if(snap.exists()) { const room = snap.data(); if(room.status === 'waiting') await updateDoc(roomRef, { players: room.players.filter(p => p.uid !== myUid) }); } } catch(e) {} navigate(`#/game-lobby/${type}`);
+            const roomRef = doc(db, getPublicPath(`games_${type}`), window.globalState.gameRoomId);
+            const myUid = window.globalState.profile.uid;
+            try {
+                const snap = await getDoc(roomRef);
+                if(snap.exists() && snap.data().status === 'waiting') {
+                    await updateDoc(roomRef, { players: snap.data().players.filter(p => p.uid !== myUid) });
+                }
+            } catch(e) {}
+            navigate(`#/game-lobby/${type}`);
+            window.updateActivity('Procurando Partida');
         };
+
         window.joinGameInRoom = async (type) => {
-            const roomRef = doc(db, getPublicPath(`games_${type}`), window.globalState.gameRoomId); const room = window.globalState.gameRoomData;
-            if(type === 'tictactoe' && room.players.length >= 2) return window.showToast("Sala cheia", "error"); if(type === 'minesweeper' && room.players.length >= 4) return window.showToast("Max 4", "error");
+            const roomRef = doc(db, getPublicPath(`games_${type}`), window.globalState.gameRoomId);
+            const room = window.globalState.gameRoomData;
+            if(type === 'tictactoe' && room.players.length >= 2) return window.showToast("Sala cheia", "error");
+            if(type === 'minesweeper' && room.players.length >= 4) return window.showToast("Sala cheia (Max 4)", "error");
             await updateDoc(roomRef, { players: arrayUnion({...window.globalState.profile, isDead: false}) });
         };
-        window.startGame = async (type) => { await updateDoc(doc(db, getPublicPath(`games_${type}`), window.globalState.gameRoomId), { status: 'playing' }); };
+
+        window.startGame = async (type) => {
+            await updateDoc(doc(db, getPublicPath(`games_${type}`), window.globalState.gameRoomId), { status: 'playing' });
+        };
 
         const initGameRoom = (type, roomId) => {
-            window.globalState.gameRoomId = roomId; window.globalState.currentGameType = type; const roomRef = doc(db, getPublicPath(`games_${type}`), roomId);
-            document.getElementById(type === 'tictactoe' ? 'ttt-dynamic-container' : 'ms-dynamic-container').innerHTML = `<div class="flex-1 flex flex-col items-center justify-center"><i class="ph-bold ph-circle-notch text-4xl text-osb-green animate-spin mb-4"></i></div>`;
+            window.globalState.gameRoomId = roomId; window.globalState.currentGameType = type; window.globalState.confettiFired = false; window.globalState.winCounted = false;
+            const roomRef = doc(db, getPublicPath(`games_${type}`), roomId);
+            const containerId = type === 'tictactoe' ? 'ttt-dynamic-container' : 'ms-dynamic-container';
+            if(type === 'minesweeper') setMsMode('dig');
+            
+            document.getElementById(containerId).innerHTML = `<div class="flex-1 flex flex-col items-center justify-center"><i class="ph-bold ph-circle-notch text-4xl text-osb-green animate-spin mb-4"></i><p class="text-osb-gray uppercase font-bold tracking-widest text-xs">Conectando...</p></div>`;
+
+            window.updateActivity(`Jogando ${type === 'tictactoe' ? 'Jogo da Velha' : 'Campo Minado'}`, roomId, type);
+
             window.globalState.gameUnsubscribe = onSnapshot(roomRef, (snap) => {
                 if (snap.exists()) {
                     const data = snap.data(); window.globalState.gameRoomData = data;
-                    if(data.status === 'finished' && data.winner && data.winner !== 'draw' && !window.globalState.confettiFired) { window.triggerConfetti(); window.globalState.confettiFired = true; if(data.hostId === window.globalState.profile.uid) registerUserWin(data.winner); }
-                    if(data.status !== 'finished') window.globalState.confettiFired = false;
-                    if(type === 'tictactoe') renderTicTacToe(data); else renderMinesweeper(data);
+                    
+                    // Lógica de Confete Global
+                    if (data.status === 'finished' && data.winner && data.winner !== 'draw') {
+                        if (!window.globalState.confettiFired) {
+                            confetti({ particleCount: 200, spread: 90, origin: { y: 0.5 }, colors: ['#1ED760', '#FFDC00', '#0074D9', '#FF4136'] });
+                            window.globalState.confettiFired = true;
+                        }
+                        if (data.winner === window.globalState.profile.uid && !window.globalState.winCounted) {
+                            updateDoc(doc(db, getPublicPath('users'), window.globalState.profile.uid), { wins: increment(1) }).catch(()=>{});
+                            window.globalState.winCounted = true;
+                        }
+                    } else if (data.status === 'playing' || data.status === 'waiting') {
+                        window.globalState.confettiFired = false; window.globalState.winCounted = false;
+                    }
+
+                    if(type === 'tictactoe') renderTicTacToe(data);
+                    else renderMinesweeper(data);
                 } else { window.showToast("Sala encerrada", "error"); navigate(`#/game-lobby/${type}`); }
             });
         };
 
-        const checkTicTacToeWin = (b) => { const l = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]]; for (let i = 0; i < l.length; i++) { const [x, y, z] = l[i]; if (b[x] && b[x] === b[y] && b[x] === b[z]) return b[x]; } if(!b.includes('')) return 'draw'; return null; };
-        window.playTicTacToe = async (idx) => {
-            const room = window.globalState.gameRoomData; const myUid = window.globalState.profile.uid; if(room.status !== 'playing' || room.turn !== myUid || room.board[idx] !== '') return;
-            const sym = room.players[0].uid === myUid ? 'X' : 'O'; let nB = [...room.board]; nB[idx] = sym; const nT = room.players.find(p => p.uid !== myUid).uid; let w = checkTicTacToeWin(nB); let st = w ? 'finished' : 'playing';
-            let uO = { board: nB, turn: nT, status: st }; if(w) uO.winner = w === 'draw' ? 'draw' : (w === 'X' ? room.players[0].uid : room.players[1].uid);
-            await updateDoc(doc(db, getPublicPath('games_tictactoe'), window.globalState.gameRoomId), uO);
+        const checkTicTacToeWin = (b) => {
+            const lines = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+            for (let i = 0; i < lines.length; i++) {
+                const [x, y, z] = lines[i]; if (b[x] && b[x] === b[y] && b[x] === b[z]) return b[x];
+            }
+            if(!b.includes('')) return 'draw';
+            return null;
         };
-        window.restartTicTacToe = async () => { await updateDoc(doc(db, getPublicPath('games_tictactoe'), window.globalState.gameRoomId), { status: 'waiting', board: Array(9).fill(''), winner: null }); };
+
+        window.playTicTacToe = async (idx) => {
+            const room = window.globalState.gameRoomData; const myUid = window.globalState.profile.uid;
+            if(room.status !== 'playing' || room.turn !== myUid || room.board[idx] !== '') return;
+
+            const isP1 = room.players[0].uid === myUid; const symbol = isP1 ? 'X' : 'O';
+            let newBoard = [...room.board]; newBoard[idx] = symbol;
+            const nextTurnUid = room.players.find(p => p.uid !== myUid).uid;
+            
+            let winner = checkTicTacToeWin(newBoard);
+            let status = winner ? 'finished' : 'playing';
+            let updateObj = { board: newBoard, turn: nextTurnUid, status: status };
+            if(winner) updateObj.winner = winner === 'draw' ? 'draw' : (winner === 'X' ? room.players[0].uid : room.players[1].uid);
+
+            await updateDoc(doc(db, getPublicPath('games_tictactoe'), window.globalState.gameRoomId), updateObj);
+        };
+
+        window.restartTicTacToe = async () => {
+            await updateDoc(doc(db, getPublicPath('games_tictactoe'), window.globalState.gameRoomId), { status: 'waiting', board: Array(9).fill(''), winner: null });
+        };
 
         const renderTicTacToe = (room) => {
-            const c = document.getElementById('ttt-dynamic-container'); const myUid = window.globalState.profile.uid; const isHost = room.hostId === myUid; const isP = room.players.some(p => p.uid === myUid);
+            const c = document.getElementById('ttt-dynamic-container'); const myUid = window.globalState.profile.uid;
+            const isHost = room.hostId === myUid; const isP = room.players.some(p => p.uid === myUid);
+
             if(room.status === 'waiting') {
-                let pHtml = room.players.map(p => `<div class="flex flex-col items-center gap-2"><img src="${p.photoURL}" class="w-16 h-16 rounded-full border-2 border-osb-blue object-cover"><span class="text-xs font-bold">${p.name}</span></div>`).join('<div class="font-black text-osb-gray px-4 self-center">VS</div>');
-                let a = !isP ? `<button onclick="joinGameInRoom('tictactoe')" class="w-full btn-primary py-4 rounded-lg text-lg mb-4">Entrar na Partida</button>` : (isHost ? `<button onclick="${room.players.length === 2 ? "startGame('tictactoe')" : ""}" class="w-full btn-primary py-4 rounded-lg text-lg mb-4 ${room.players.length<2 ? 'opacity-50' : ''}">Iniciar Duelo</button>` : '');
-                c.innerHTML = `<div class="card p-6 mb-6 flex-1 flex flex-col items-center justify-center text-center border-osb-border min-h-[300px]"><h2 class="text-3xl font-black mb-2 text-osb-blue uppercase">Jogo da Velha</h2><p class="text-osb-gray text-sm mb-8">Passe o código: <b>${room.id}</b></p><div class="flex items-center justify-center w-full mb-8">${pHtml}</div>${room.players.length < 2 ? '<p class="text-xs text-osb-gray animate-pulse uppercase tracking-widest">Aguardando oponente...</p>' : ''}</div>${a}`;
+                let pHtml = room.players.map(p => `<div class="flex flex-col items-center gap-2"><img src="${p.photoURL}" class="w-20 h-20 rounded-full border-[3px] border-osb-blue object-cover shadow-[0_0_15px_rgba(0,116,217,0.4)]"><span class="font-black">${p.name}</span></div>`).join('<div class="font-black text-osb-gray px-6 self-center text-2xl">VS</div>');
+                let action = !isP ? `<button onclick="joinGameInRoom('tictactoe')" class="w-full btn-primary py-4 rounded-lg text-lg mb-4">Entrar na Partida</button>` : (isHost ? `<button onclick="${room.players.length === 2 ? "startGame('tictactoe')" : ""}" class="w-full btn-primary py-4 rounded-lg text-lg mb-4 ${room.players.length<2 ? 'opacity-50' : ''}">Iniciar Duelo</button>` : '');
+                
+                c.innerHTML = `
+                    <div class="card p-6 mb-6 flex-1 flex flex-col items-center justify-center text-center border-osb-border shadow-2xl">
+                        <h2 class="text-4xl font-black mb-2 text-osb-blue uppercase tracking-tighter" style="text-shadow: 2px 2px 0 #000;">Jogo da Velha</h2>
+                        <p class="text-osb-gray text-sm mb-10">Passe o código pra batalha: <b class="text-osb-white text-lg bg-osb-surface px-2 py-1 rounded">${room.id}</b></p>
+                        <div class="flex items-center justify-center w-full mb-8">${pHtml}</div>
+                        ${room.players.length < 2 ? '<p class="text-xs text-osb-yellow animate-pulse uppercase tracking-widest font-bold"><i class="ph-bold ph-spinner animate-spin inline-block"></i> Aguardando oponente...</p>' : ''}
+                    </div>
+                    ${action}
+                `;
             } else {
-                const p1 = room.players[0]; const p2 = room.players[1]; const isMyTurn = room.turn === myUid && room.status === 'playing';
-                let tH = `<div class="flex justify-between items-center mb-6 px-4"><div class="flex flex-col items-center gap-1 ${room.turn === p1.uid ? 'opacity-100 scale-110' : 'opacity-50'} transition-all"><img src="${p1.photoURL}" class="w-12 h-12 rounded-full border-2 border-osb-green object-cover"><span class="text-[10px] font-bold text-osb-green">X - ${p1.name}</span></div><div class="font-black text-osb-gray text-xl">VS</div><div class="flex flex-col items-center gap-1 ${room.turn === p2.uid ? 'opacity-100 scale-110' : 'opacity-50'} transition-all"><img src="${p2.photoURL}" class="w-12 h-12 rounded-full border-2 border-osb-blue object-cover"><span class="text-[10px] font-bold text-osb-blue">O - ${p2.name}</span></div></div><div class="text-center mb-4 h-6">${room.status === 'playing' ? `<span class="text-xs font-bold uppercase tracking-widest ${isMyTurn ? 'text-osb-white animate-pulse' : 'text-osb-gray'}">Vez de: ${room.turn === p1.uid ? p1.name : p2.name}</span>` : ''}</div>`;
-                let bH = `<div class="grid grid-cols-3 gap-2 w-full max-w-[300px] mx-auto mb-6">`; room.board.forEach((cell, i) => { bH += `<button onclick="playTicTacToe(${i})" class="ttt-cell ${cell === 'X' ? 'ttt-x' : (cell === 'O' ? 'ttt-o' : '')}" ${cell !== '' || room.status !== 'playing' ? 'disabled' : ''}>${cell}</button>`; }); bH += `</div>`;
-                let wH = ''; if(room.status === 'finished') { wH = room.winner === 'draw' ? `<h3 class="text-2xl font-black uppercase text-osb-gray text-center animate-bounce">Deu Velha!</h3>` : `<h3 class="text-2xl font-black uppercase text-osb-white text-center animate-bounce">${room.winner === p1.uid ? p1.name : p2.name} Venceu! <i class="ph-fill ph-trophy text-osb-green"></i></h3>`; if(isHost) wH += `<button onclick="restartTicTacToe()" class="w-full btn-primary py-3 mt-6 rounded-lg uppercase tracking-widest">Jogar Novamente</button>`; }
-                c.innerHTML = `<div class="flex-1 flex flex-col pt-4">${tH}${bH}${wH}</div>`;
+                const p1 = room.players[0]; const p2 = room.players[1];
+                const isMyTurn = room.turn === myUid && room.status === 'playing';
+                const turnName = room.turn === p1.uid ? p1.name : p2.name;
+
+                let topHtml = `
+                    <div class="flex justify-between items-center mb-6 px-2 bg-osb-surface rounded-2xl p-4 border border-osb-border shadow-lg">
+                        <div class="flex flex-col items-center gap-1 ${room.turn === p1.uid ? 'opacity-100 scale-110' : 'opacity-50 grayscale'} transition-all duration-300">
+                            <img src="${p1.photoURL}" class="w-14 h-14 rounded-full border-2 border-osb-green object-cover shadow-[0_0_10px_rgba(30,215,96,0.5)]">
+                            <span class="text-xs font-bold text-osb-green uppercase">X - ${p1.name}</span>
+                        </div>
+                        <div class="flex flex-col items-center">
+                            <div class="font-black text-osb-gray text-xl mb-1">VS</div>
+                            ${room.status === 'playing' ? `<span class="text-[10px] font-black uppercase tracking-widest bg-osb-black px-2 py-1 rounded-full ${isMyTurn ? 'text-osb-white animate-pulse' : 'text-osb-gray'}">Vez de ${turnName}</span>` : ''}
+                        </div>
+                        <div class="flex flex-col items-center gap-1 ${room.turn === p2.uid ? 'opacity-100 scale-110' : 'opacity-50 grayscale'} transition-all duration-300">
+                            <img src="${p2.photoURL}" class="w-14 h-14 rounded-full border-2 border-osb-blue object-cover shadow-[0_0_10px_rgba(0,116,217,0.5)]">
+                            <span class="text-xs font-bold text-osb-blue uppercase">O - ${p2.name}</span>
+                        </div>
+                    </div>
+                `;
+
+                let boardHtml = `<div class="grid grid-cols-3 gap-3 w-full max-w-[320px] mx-auto mb-8 relative">`;
+                room.board.forEach((cell, i) => {
+                    let symClass = cell === 'X' ? 'ttt-x' : (cell === 'O' ? 'ttt-o' : '');
+                    boardHtml += `<button onclick="playTicTacToe(${i})" class="ttt-cell ${symClass}" ${cell !== '' || room.status !== 'playing' ? 'disabled' : ''}>${cell}</button>`;
+                });
+                boardHtml += `</div>`;
+
+                let winHtml = '';
+                if(room.status === 'finished') {
+                    if(room.winner === 'draw') winHtml = `<div class="text-center bg-osb-surface p-4 rounded-xl border border-osb-border animate-slide-up"><h3 class="text-2xl font-black uppercase text-osb-gray animate-pulse">Deu Velha! 👵</h3></div>`;
+                    else {
+                        const winP = room.winner === p1.uid ? p1 : p2;
+                        winHtml = `<div class="text-center bg-osb-green/10 p-4 rounded-xl border border-osb-green animate-slide-up"><h3 class="text-2xl font-black uppercase text-osb-green animate-pulse">${winP.name} Venceu! <i class="ph-fill ph-trophy"></i></h3></div>`;
+                    }
+                    if(isHost) winHtml += `<button onclick="restartTicTacToe()" class="w-full btn-primary py-4 mt-6 rounded-lg uppercase tracking-widest shadow-lg">Jogar Novamente</button>`;
+                }
+
+                c.innerHTML = `<div class="flex-1 flex flex-col pt-2 justify-center">${topHtml}${boardHtml}${winHtml}</div>`;
             }
         };
 
         function generateMinesweeperBoard(rows, cols, mines) {
-            let b = Array(rows * cols).fill(null).map(() => ({ mine: false, revealed: false, adjacent: 0 })); let p = 0; while(p < mines) { let idx = Math.floor(Math.random() * (rows * cols)); if(!b[idx].mine) { b[idx].mine = true; p++; } }
-            for(let r=0; r<rows; r++) for(let c=0; c<cols; c++) if(!b[r*cols+c].mine) { let count = 0; for(let i=-1; i<=1; i++) for(let j=-1; j<=1; j++) if(r+i>=0 && r+i<rows && c+j>=0 && c+j<cols && b[(r+i)*cols + (c+j)].mine) count++; b[r*cols+c].adjacent = count; } return b;
+            let board = Array(rows * cols).fill(null).map(() => ({ mine: false, revealed: false, adjacent: 0, flaggedBy: null }));
+            let placed = 0;
+            while(placed < mines) {
+                let idx = Math.floor(Math.random() * (rows * cols));
+                if(!board[idx].mine) { board[idx].mine = true; placed++; }
+            }
+            const getAdj = (r, c) => {
+                let count = 0;
+                for(let i=-1; i<=1; i++) for(let j=-1; j<=1; j++) if(r+i>=0 && r+i<rows && c+j>=0 && c+j<cols) if(board[(r+i)*cols + (c+j)].mine) count++;
+                return count;
+            };
+            for(let r=0; r<rows; r++) for(let c=0; c<cols; c++) if(!board[r*cols+c].mine) board[r*cols+c].adjacent = getAdj(r, c);
+            return board;
         }
+
         window.playMinesweeper = async (idx) => {
-            const room = window.globalState.gameRoomData; const myUid = window.globalState.profile.uid; if(room.status !== 'playing' || room.turn !== myUid || room.board[idx].revealed) return;
-            let nB = JSON.parse(JSON.stringify(room.board)); let nP = JSON.parse(JSON.stringify(room.players)); let me = nP.find(p => p.uid === myUid); let dC = room.deadCount || 0; let st = 'playing'; let w = null;
-            if(nB[idx].mine) { nB[idx].revealed = true; me.isDead = true; dC++; window.showToast("BOMBA!", "error"); } else { const reveal = (i) => { if(nB[i].revealed || nB[i].mine) return; nB[i].revealed = true; if(nB[i].adjacent === 0) { let r = Math.floor(i/8), c = i%8; for(let x=-1; x<=1; x++) for(let y=-1; y<=1; y++) if(r+x>=0 && r+x<8 && c+y>=0 && c+y<8) reveal((r+x)*8+(c+y)); } }; reveal(idx); }
-            const aP = nP.filter(p => !p.isDead); if(aP.length === 1 && nP.length > 1) { st = 'finished'; w = aP[0].uid; } else if (aP.length === 0) { st = 'finished'; w = 'draw'; }
-            let nT = room.turn; if(st === 'playing') { let cI = nP.findIndex(p => p.uid === room.turn); do { cI = (cI + 1) % nP.length; } while (nP[cI].isDead); nT = nP[cI].uid; }
-            await updateDoc(doc(db, getPublicPath('games_minesweeper'), window.globalState.gameRoomId), { board: nB, players: nP, turn: nT, status: st, deadCount: dC, winner: w });
-        };
-        window.restartMinesweeper = async () => { await updateDoc(doc(db, getPublicPath('games_minesweeper'), window.globalState.gameRoomId), { status: 'waiting', board: generateMinesweeperBoard(8,8,10), winner: null, players: window.globalState.gameRoomData.players.map(p => ({...p, isDead: false})), deadCount: 0 }); };
-        const renderMinesweeper = (room) => {
-            const c = document.getElementById('ms-dynamic-container'); const myUid = window.globalState.profile.uid; const isHost = room.hostId === myUid; const isP = room.players.some(p => p.uid === myUid);
-            if(room.status === 'waiting') {
-                let pHtml = room.players.map(p => `<div class="flex flex-col items-center gap-2"><img src="${p.photoURL}" class="w-12 h-12 rounded-full border-2 border-osb-surface object-cover"><span class="text-[10px] font-bold text-osb-gray w-16 truncate text-center">${p.name}</span></div>`).join('');
-                let a = !isP ? `<button onclick="joinGameInRoom('minesweeper')" class="w-full btn-primary py-4 rounded-lg text-lg mb-4">Entrar (${room.players.length}/4)</button>` : (isHost ? `<button onclick="${room.players.length >= 2 ? "startGame('minesweeper')" : ""}" class="w-full btn-primary py-4 rounded-lg text-lg mb-4 ${room.players.length<2 ? 'opacity-50' : ''}">Iniciar</button>` : '');
-                c.innerHTML = `<div class="card p-6 mb-6 flex-1 flex flex-col items-center justify-center text-center border-osb-border min-h-[300px]"><h2 class="text-3xl font-black mb-2 text-osb-red uppercase">Campo Minado</h2><p class="text-osb-gray text-sm mb-8">Passe o código: <b>${room.id}</b></p><div class="flex flex-wrap justify-center gap-4 w-full mb-8">${pHtml}</div>${room.players.length < 2 ? '<p class="text-xs text-osb-gray animate-pulse uppercase tracking-widest">Aguardando vítimas...</p>' : ''}</div>${a}`;
+            const room = window.globalState.gameRoomData; const myUid = window.globalState.profile.uid;
+            if(room.status !== 'playing' || room.turn !== myUid || room.board[idx].revealed) return;
+
+            let newBoard = JSON.parse(JSON.stringify(room.board));
+            
+            // Modo Bandeira
+            if (window.globalState.msMode === 'flag') {
+                if (newBoard[idx].flaggedBy === myUid) newBoard[idx].flaggedBy = null; // Remove
+                else if (!newBoard[idx].flaggedBy) newBoard[idx].flaggedBy = myUid; // Coloca
+                await updateDoc(doc(db, getPublicPath('games_minesweeper'), window.globalState.gameRoomId), { board: newBoard });
+                return; // Não passa a vez ao colocar bandeira
+            }
+
+            // Impede escavar onde tem bandeira
+            if (newBoard[idx].flaggedBy) return;
+
+            let newPlayers = JSON.parse(JSON.stringify(room.players));
+            let me = newPlayers.find(p => p.uid === myUid);
+            let deadCount = room.deadCount || 0;
+            let status = 'playing'; let winner = null;
+
+            if(newBoard[idx].mine) {
+                newBoard[idx].revealed = true; me.isDead = true; deadCount++;
+                window.showToast("💥 KABOOM! Você encontrou uma bomba.", "error");
             } else {
-                let tH = `<div class="flex flex-wrap justify-center gap-3 mb-6">`; room.players.forEach(p => { const isTurn = room.turn === p.uid && room.status === 'playing'; tH += `<div class="flex items-center gap-2 px-3 py-1 rounded-full ${p.isDead ? 'bg-osb-red/20 opacity-50' : (isTurn ? 'bg-osb-surface border border-osb-green scale-105' : 'bg-osb-surface opacity-80')} transition-all"><img src="${p.photoURL}" class="w-6 h-6 rounded-full ${p.isDead ? 'grayscale' : ''} object-cover"><span class="text-xs font-bold ${p.isDead ? 'line-through text-osb-red' : (isTurn ? 'text-osb-green' : 'text-osb-white')}">${p.name}</span></div>`; }); tH += `</div>`;
-                let bH = `<div class="grid grid-cols-8 gap-1 w-full max-w-[320px] mx-auto mb-6">`; room.board.forEach((cell, i) => { if(cell.revealed) { if(cell.mine) bH += `<div class="ms-cell ms-revealed ms-mine"><i class="ph-fill ph-bomb text-xl"></i></div>`; else bH += `<div class="ms-cell ms-revealed ms-${cell.adjacent}">${cell.adjacent > 0 ? cell.adjacent : ''}</div>`; } else { bH += `<div onclick="playMinesweeper(${i})" class="ms-cell ms-hidden"></div>`; } }); bH += `</div>`;
-                let wH = ''; if(room.status === 'playing') { const me = room.players.find(p => p.uid === myUid); if(me?.isDead) wH = `<p class="text-center text-osb-red font-bold uppercase tracking-widest animate-pulse">Você Explodiu!</p>`; else if(room.turn === myUid) wH = `<p class="text-center text-osb-green font-bold uppercase tracking-widest animate-pulse">Sua vez...</p>`; else wH = `<p class="text-center text-osb-gray font-bold uppercase tracking-widest">Aguarde...</p>`; } else if(room.status === 'finished') { wH = room.winner === 'draw' ? `<h3 class="text-xl font-black uppercase text-osb-gray text-center animate-bounce">Todo mundo explodiu!</h3>` : `<h3 class="text-xl font-black uppercase text-osb-green text-center animate-bounce">${room.players.find(p=>p.uid===room.winner).name} Sobreviveu!</h3>`; if(isHost) wH += `<button onclick="restartMinesweeper()" class="w-full btn-primary py-3 mt-6 rounded-lg uppercase tracking-widest">Jogar Novamente</button>`; }
-                c.innerHTML = `<div class="flex-1 flex flex-col pt-2">${tH}${bH}${wH}</div>`;
+                const rows = 8, cols = 8;
+                const reveal = (i) => {
+                    if(newBoard[i].revealed || newBoard[i].mine || newBoard[i].flaggedBy) return;
+                    newBoard[i].revealed = true;
+                    if(newBoard[i].adjacent === 0) {
+                        let r = Math.floor(i/cols), c = i%cols;
+                        for(let x=-1; x<=1; x++) for(let y=-1; y<=1; y++) if(r+x>=0 && r+x<rows && c+y>=0 && c+y<cols) reveal((r+x)*cols+(c+y));
+                    }
+                };
+                reveal(idx);
+            }
+
+            const alivePlayers = newPlayers.filter(p => !p.isDead);
+            if(alivePlayers.length === 1 && newPlayers.length > 1) { status = 'finished'; winner = alivePlayers[0].uid; } 
+            else if (alivePlayers.length === 0) { status = 'finished'; winner = 'draw'; }
+
+            // Verificando se todos os quadrados não-mina foram revelados (Vitória Coop/Sobrevivência)
+            const safeCellsLeft = newBoard.filter(c => !c.mine && !c.revealed).length;
+            if (safeCellsLeft === 0 && status === 'playing') {
+                status = 'finished'; winner = 'draw'; // ou todos ganham, mas p/ ranking vamos por quem ficou vivo
+                if(alivePlayers.length > 0) winner = alivePlayers[0].uid; // simplificação
+            }
+
+            let nextTurnUid = room.turn;
+            if(status === 'playing') {
+                let currIdx = newPlayers.findIndex(p => p.uid === room.turn);
+                do { currIdx = (currIdx + 1) % newPlayers.length; } while (newPlayers[currIdx].isDead);
+                nextTurnUid = newPlayers[currIdx].uid;
+            } else if (status === 'finished') {
+                // Revelar todas as minas no final
+                newBoard.forEach(c => { if(c.mine) c.revealed = true; });
+            }
+
+            await updateDoc(doc(db, getPublicPath('games_minesweeper'), window.globalState.gameRoomId), { board: newBoard, players: newPlayers, turn: nextTurnUid, status: status, deadCount: deadCount, winner: winner });
+        };
+
+        window.restartMinesweeper = async () => {
+            const roomRef = doc(db, getPublicPath('games_minesweeper'), window.globalState.gameRoomId);
+            const room = window.globalState.gameRoomData;
+            const newPlayers = room.players.map(p => ({...p, isDead: false}));
+            await updateDoc(roomRef, { status: 'waiting', board: generateMinesweeperBoard(8,8,12), winner: null, players: newPlayers, deadCount: 0 });
+        };
+
+        const renderMinesweeper = (room) => {
+            const c = document.getElementById('ms-dynamic-container'); const myUid = window.globalState.profile.uid;
+            const isHost = room.hostId === myUid; const isP = room.players.some(p => p.uid === myUid);
+            const ctrl = document.getElementById('ms-controls-container');
+
+            if(room.status === 'waiting') {
+                ctrl.classList.add('hidden');
+                let pHtml = room.players.map(p => `<div class="flex flex-col items-center gap-2"><img src="${p.photoURL}" class="w-16 h-16 rounded-full border-[3px] border-osb-red object-cover shadow-[0_0_15px_rgba(255,65,54,0.4)]"><span class="text-xs font-bold text-osb-white w-20 truncate text-center">${p.name}</span></div>`).join('');
+                let action = !isP ? `<button onclick="joinGameInRoom('minesweeper')" class="w-full btn-primary py-4 rounded-lg text-lg mb-4 shadow-lg">Entrar (${room.players.length}/4)</button>` : (isHost ? `<button onclick="${room.players.length >= 2 ? "startGame('minesweeper')" : ""}" class="w-full btn-primary py-4 rounded-lg text-lg mb-4 shadow-lg ${room.players.length<2 ? 'opacity-50' : ''}">Iniciar Sobrevivência</button>` : '');
+                
+                c.innerHTML = `
+                    <div class="card p-6 mb-6 flex-1 flex flex-col items-center justify-center text-center border-osb-border shadow-2xl">
+                        <h2 class="text-4xl font-black mb-1 text-osb-red uppercase tracking-tighter" style="text-shadow: 2px 2px 0 #000;">Campo Minado</h2>
+                        <p class="text-[10px] uppercase tracking-widest text-osb-gray mb-8 bg-osb-surface px-2 py-1 rounded">Roleta Russa Multi</p>
+                        <p class="text-osb-gray text-sm mb-8">Passe o código: <b class="text-osb-white text-lg bg-osb-surface px-2 py-1 rounded">${room.id}</b></p>
+                        <div class="flex flex-wrap justify-center gap-6 w-full mb-8">${pHtml}</div>
+                        ${room.players.length < 2 ? '<p class="text-xs text-osb-yellow animate-pulse uppercase tracking-widest font-bold"><i class="ph-bold ph-spinner animate-spin inline-block"></i> Aguardando vítimas...</p>' : ''}
+                    </div>
+                    ${action}
+                `;
+            } else {
+                ctrl.classList.remove('hidden');
+                const isMyTurn = room.turn === myUid && room.status === 'playing';
+                const turnP = room.players.find(p => p.uid === room.turn);
+
+                let topHtml = `<div class="flex flex-wrap justify-center gap-3 mb-6 bg-osb-surface p-3 rounded-xl border border-osb-border shadow-md w-full max-w-[320px] mx-auto">`;
+                room.players.forEach(p => {
+                    const isTurn = room.turn === p.uid && room.status === 'playing';
+                    topHtml += `
+                        <div class="flex items-center gap-2 px-3 py-1.5 rounded-lg border ${p.isDead ? 'bg-osb-red/10 border-osb-red/50 opacity-60' : (isTurn ? 'bg-osb-black border-osb-green shadow-[0_0_8px_rgba(30,215,96,0.3)] scale-105' : 'bg-osb-black border-transparent')} transition-all">
+                            <img src="${p.photoURL}" class="w-6 h-6 rounded-full ${p.isDead ? 'grayscale' : ''} object-cover">
+                            <span class="text-[10px] font-black uppercase tracking-widest ${p.isDead ? 'line-through text-osb-red' : (isTurn ? 'text-osb-green' : 'text-osb-white')}">${p.name.substring(0,6)}</span>
+                        </div>
+                    `;
+                });
+                topHtml += `</div>`;
+
+                let boardHtml = `<div class="grid grid-cols-8 gap-[3px] w-full max-w-[320px] mx-auto mb-8 bg-osb-surface p-2 rounded-xl border border-osb-border shadow-xl">`;
+                room.board.forEach((cell, i) => {
+                    if(cell.revealed) {
+                        if(cell.mine) boardHtml += `<div class="ms-cell ms-revealed ms-mine"><i class="ph-fill ph-bomb text-xl drop-shadow-md"></i></div>`;
+                        else boardHtml += `<div class="ms-cell ms-revealed ms-${cell.adjacent}">${cell.adjacent > 0 ? cell.adjacent : ''}</div>`;
+                    } else {
+                        if (cell.flaggedBy) boardHtml += `<div onclick="playMinesweeper(${i})" class="ms-cell ms-hidden ms-flagged"><i class="ph-fill ph-flag"></i></div>`;
+                        else boardHtml += `<div onclick="playMinesweeper(${i})" class="ms-cell ms-hidden"></div>`;
+                    }
+                });
+                boardHtml += `</div>`;
+
+                let winHtml = '';
+                if(room.status === 'playing') {
+                    const me = room.players.find(p => p.uid === myUid);
+                    if(me && me.isDead) winHtml = `<div class="text-center bg-osb-red/10 p-3 rounded-xl border border-osb-red"><p class="text-osb-red font-black uppercase tracking-widest animate-pulse"><i class="ph-fill ph-skull"></i> Você Explodiu!</p></div>`;
+                    else if(isMyTurn) winHtml = `<div class="text-center bg-osb-green/10 p-3 rounded-xl border border-osb-green"><p class="text-osb-green font-black uppercase tracking-widest animate-pulse">Sua vez! ⛏️ ou 🚩</p></div>`;
+                    else winHtml = `<div class="text-center bg-osb-surface p-3 rounded-xl border border-osb-border"><p class="text-osb-gray font-bold uppercase tracking-widest text-xs">Vez de ${turnP?.name}</p></div>`;
+                } else if(room.status === 'finished') {
+                    if(room.winner === 'draw') winHtml = `<div class="text-center bg-osb-red/20 p-4 rounded-xl border border-osb-red"><h3 class="text-xl font-black uppercase text-osb-red animate-pulse">Destruição Total! 💥</h3></div>`;
+                    else {
+                        const winP = room.players.find(p => p.uid === room.winner);
+                        winHtml = `<div class="text-center bg-osb-green/10 p-4 rounded-xl border border-osb-green"><h3 class="text-xl font-black uppercase text-osb-green animate-pulse">${winP?.name || 'Alguém'} Sobreviveu! <i class="ph-fill ph-trophy"></i></h3></div>`;
+                    }
+                    if(isHost) winHtml += `<button onclick="restartMinesweeper()" class="w-full btn-primary py-4 mt-6 rounded-lg uppercase tracking-widest shadow-lg">Jogar Novamente</button>`;
+                }
+
+                c.innerHTML = `<div class="flex-1 flex flex-col justify-center">${topHtml}${boardHtml}${winHtml}</div>`;
             }
         };
 
-        window.selectPppTime = (time) => { window.globalState.pppSelectedTime = time; document.querySelectorAll('.ppp-time-btn').forEach(btn => { btn.className = parseInt(btn.dataset.time) === time ? "ppp-time-btn py-3 rounded-lg font-bold bg-osb-green text-osb-black border border-osb-green transition-colors cursor-pointer" : "ppp-time-btn py-3 rounded-lg font-bold border border-osb-border text-osb-gray hover:border-osb-green transition-colors cursor-pointer"; }); };
-        document.getElementById('btn-create-ppp').addEventListener('click', async () => { const btn = document.getElementById('btn-create-ppp'); btn.innerHTML = '<i class="ph-bold ph-circle-notch animate-spin"></i>'; btn.disabled = true; try { const rId = Math.floor(1000 + Math.random() * 9000).toString(); await setDoc(doc(db, getPublicPath('ppp_rooms'), rId), { id: rId, hostId: window.globalState.profile.uid, timeLimit: window.globalState.pppSelectedTime, status: 'waiting', participants: [window.globalState.profile], leftParticipants: [], currentIndex: 0, createdAt: serverTimestamp(), votes: {}, media: {} }); window.navigate(`#/ppp/${rId}`); } catch (e) { window.showToast("Erro", "error"); } btn.innerHTML = 'Criar Sala <i class="ph-bold ph-play"></i>'; btn.disabled = false; });
-        document.getElementById('btn-join-ppp').addEventListener('click', async () => { const code = document.getElementById('ppp-join-code').value.trim(); if(code.length !== 4) return window.showToast("4 dígitos", "error"); const btn = document.getElementById('btn-join-ppp'); btn.innerHTML = '<i class="ph-bold ph-circle-notch animate-spin"></i>'; btn.disabled = true; try { const snap = await getDoc(doc(db, getPublicPath('ppp_rooms'), code)); if(snap.exists()) window.navigate(`#/ppp/${code}`); else window.showToast("Não encontrada", "error"); } catch(e) {} btn.innerHTML = 'Entrar <i class="ph-bold ph-sign-in"></i>'; btn.disabled = false; });
+        // --- PPP Game ---
+        window.selectPppTime = (time) => {
+            window.globalState.pppSelectedTime = time;
+            document.querySelectorAll('.ppp-time-btn').forEach(btn => {
+                btn.className = parseInt(btn.dataset.time) === time ? "ppp-time-btn py-3 rounded-lg font-bold bg-osb-green text-osb-black border border-osb-green transition-colors cursor-pointer" : "ppp-time-btn py-3 rounded-lg font-bold border border-osb-border text-osb-gray hover:border-osb-green transition-colors cursor-pointer";
+            });
+        };
 
-        window.cleanupPPPRoom = () => { if(window.globalState.pppUnsubscribe) { window.globalState.pppUnsubscribe(); window.globalState.pppUnsubscribe = null; } clearInterval(window.globalState.pppTimerInterval); window.globalState.currentRoomId = null; const el = document.getElementById('ppp-dynamic-container'); if(el) el.innerHTML = ''; }
-        window.initPPPRoom = (roomId) => { window.globalState.currentRoomId = roomId; window.globalState.localRoomMedia = { photos: [], videos: [] }; window.globalState.startingGameTimer = null; document.getElementById('ppp-dynamic-container').innerHTML = `<div class="flex-1 flex flex-col items-center justify-center"><i class="ph-bold ph-circle-notch text-4xl text-osb-green animate-spin mb-4"></i></div>`; window.globalState.pppUnsubscribe = onSnapshot(doc(db, getPublicPath('ppp_rooms'), roomId), (snap) => { if (snap.exists()) { const d = snap.data(); if(d.status === 'finished' && !window.globalState.confettiFired) { window.triggerConfetti(); window.globalState.confettiFired=true; /* Registro de win pro PPP seria complexo pois nao tem 1 ganhador, entao omitimos pro rank ou damos pra todos */ } if(d.status !== 'finished') window.globalState.confettiFired=false; renderPPPRoomUI(d); } else { window.showToast("Encerrada", "error"); navigate('#/ppp-lobby'); } }); }
+        document.getElementById('btn-create-ppp').addEventListener('click', async () => {
+            const btn = document.getElementById('btn-create-ppp'); btn.innerHTML = '<i class="ph-bold ph-circle-notch animate-spin"></i> Criando...'; btn.disabled = true;
+            try {
+                const roomId = Math.floor(1000 + Math.random() * 9000).toString();
+                await setDoc(doc(db, getPublicPath('ppp_rooms'), roomId), {
+                    id: roomId, hostId: window.globalState.profile.uid, timeLimit: window.globalState.pppSelectedTime,
+                    status: 'waiting', participants: [window.globalState.profile], leftParticipants: [], currentIndex: 0,
+                    createdAt: serverTimestamp(), votes: {}, media: {}
+                });
+                navigate(`#/ppp/${roomId}`);
+            } catch (error) { window.showToast("Erro ao criar sala", "error"); }
+            btn.innerHTML = 'Criar Sala <i class="ph-bold ph-play"></i>'; btn.disabled = false;
+        });
+
+        document.getElementById('btn-join-ppp').addEventListener('click', async () => {
+            const code = document.getElementById('ppp-join-code').value.trim();
+            if(code.length !== 4) return window.showToast("Código inválido", "error");
+            const btn = document.getElementById('btn-join-ppp'); btn.innerHTML = '<i class="ph-bold ph-circle-notch animate-spin"></i> Buscando...'; btn.disabled = true;
+            try {
+                const snap = await getDoc(doc(db, getPublicPath('ppp_rooms'), code));
+                if(snap.exists()) navigate(`#/ppp/${code}`); else window.showToast("Sala não encontrada", "error");
+            } catch(e) { window.showToast("Erro", "error"); }
+            btn.innerHTML = 'Entrar <i class="ph-bold ph-sign-in"></i>'; btn.disabled = false;
+        });
+
+        window.cleanupPPPRoom = () => {
+            if(window.globalState.pppUnsubscribe) { window.globalState.pppUnsubscribe(); window.globalState.pppUnsubscribe = null; }
+            clearInterval(window.globalState.pppTimerInterval); window.globalState.currentRoomId = null;
+            const el = document.getElementById('ppp-dynamic-container'); if(el) el.innerHTML = '';
+        }
+
+        window.initPPPRoom = (roomId) => {
+            window.globalState.currentRoomId = roomId; window.globalState.localRoomMedia = { photos: [], videos: [] }; window.globalState.startingGameTimer = null;
+            document.getElementById('ppp-dynamic-container').innerHTML = `<div class="flex-1 flex flex-col items-center justify-center"><i class="ph-bold ph-circle-notch text-4xl text-osb-green animate-spin mb-4"></i></div>`;
+            window.updateActivity(`Na Sala de P.P.P.`, roomId, 'ppp');
+            window.globalState.pppUnsubscribe = onSnapshot(doc(db, getPublicPath('ppp_rooms'), roomId), (snap) => {
+                if (snap.exists()) renderPPPRoomUI(snap.data()); else { window.showToast("Sala encerrada", "error"); navigate('#/ppp-lobby'); }
+            });
+        }
+        
         window.joinPPPRoom = async () => { await updateDoc(doc(db, getPublicPath('ppp_rooms'), window.globalState.currentRoomId), { participants: arrayUnion(window.globalState.profile) }); };
-        window.leavePPPRoom = async () => { if(!window.globalState.currentRoomId || !window.globalState.profile) return navigate('#/ppp-lobby'); try { const rRef = doc(db, getPublicPath('ppp_rooms'), window.globalState.currentRoomId); const snap = await getDoc(rRef); if(snap.exists() && snap.data().status === 'waiting') await updateDoc(rRef, { participants: snap.data().participants.filter(p => p.uid !== window.globalState.profile.uid) }); else await updateDoc(rRef, { leftParticipants: arrayUnion(window.globalState.profile.uid) }); } catch(e) {} navigate('#/ppp-lobby'); };
+        window.leavePPPRoom = async () => {
+            if(!window.globalState.currentRoomId || !window.globalState.profile) return navigate('#/ppp-lobby');
+            try {
+                const roomRef = doc(db, getPublicPath('ppp_rooms'), window.globalState.currentRoomId);
+                const snap = await getDoc(roomRef);
+                if(snap.exists() && snap.data().status === 'waiting') await updateDoc(roomRef, { participants: snap.data().participants.filter(p => p.uid !== window.globalState.profile.uid) });
+                else await updateDoc(roomRef, { leftParticipants: arrayUnion(window.globalState.profile.uid) });
+            } catch(e) {}
+            navigate('#/ppp-lobby'); window.updateActivity('Procurando Jogo');
+        };
         window.restartPPPRoom = async () => { await updateDoc(doc(db, getPublicPath('ppp_rooms'), window.globalState.currentRoomId), { status: 'waiting', currentIndex: 0, votes: {}, media: {}, leftParticipants: [] }); };
         window.startPPPGame = async () => { await updateDoc(doc(db, getPublicPath('ppp_rooms'), window.globalState.currentRoomId), { status: 'preparing' }); };
-        window.uploadPPPMedia = async (e, type) => { const f = e.target.files[0]; if(!f) return; if (f.size > 200*1024*1024) return window.showToast("Max 200MB", "error"); window.showToast("Enviando...", "success"); try { let url = type === 'photo' ? await uploadToImgur(f) : await uploadToCatbox(f); window.globalState.localRoomMedia[type + 's'].push(url); if (window.globalState.currentRoomData) renderPPPRoomUI(window.globalState.currentRoomData); } catch(err) { window.showToast("Erro no upload", "error"); } e.target.value = ''; };
-        window.removePPPMedia = (type, idx) => { window.globalState.localRoomMedia[type + 's'].splice(idx, 1); if (window.globalState.currentRoomData) renderPPPRoomUI(window.globalState.currentRoomData); };
-        window.setPPPReady = async () => { if(window.globalState.localRoomMedia.photos.length < 1) return window.showToast("Min 1 foto", "error"); await updateDoc(doc(db, getPublicPath('ppp_rooms'), window.globalState.currentRoomId), { [`media.${window.globalState.profile.uid}`]: { photos: window.globalState.localRoomMedia.photos, videos: window.globalState.localRoomMedia.videos, ready: true } }); };
-        window.castVote = async (voteType, targetUid) => { document.getElementById('vote-buttons-area').innerHTML = `<div class="card p-6 text-center border-2 border-osb-green text-osb-green"><p class="text-xs uppercase mb-2 opacity-80">Computado</p><span class="text-3xl font-black uppercase">${voteType}</span></div>`; await updateDoc(doc(db, getPublicPath('ppp_rooms'), window.globalState.currentRoomId), { [`votes.${targetUid}.${window.globalState.profile.uid}`]: voteType }); };
-        window.scrollPPP = (dir) => { document.getElementById('ppp-media-scroll').scrollBy({left: dir*200, behavior: 'smooth'}); };
+        
+        window.uploadPPPMedia = async (e, type) => {
+            const file = e.target.files[0]; if(!file) return;
+            if (file.size > 200 * 1024 * 1024) return window.showToast("Max 200MB", "error");
+            window.showToast("Enviando arquivo...", "success");
+            try {
+                let url = type === 'photo' ? await uploadToImgur(file) : await uploadToCatbox(file);
+                window.globalState.localRoomMedia[type + 's'].push(url);
+                if (window.globalState.currentRoomData) renderPPPRoomUI(window.globalState.currentRoomData);
+            } catch(err) { window.showToast("Erro no upload", "error"); }
+            e.target.value = '';
+        };
+        window.removePPPMedia = (type, index) => { window.globalState.localRoomMedia[type + 's'].splice(index, 1); if (window.globalState.currentRoomData) renderPPPRoomUI(window.globalState.currentRoomData); };
+        window.setPPPReady = async () => {
+            if(window.globalState.localRoomMedia.photos.length < 1) return window.showToast("Min 1 foto!", "error");
+            await updateDoc(doc(db, getPublicPath('ppp_rooms'), window.globalState.currentRoomId), { [`media.${window.globalState.profile.uid}`]: { photos: window.globalState.localRoomMedia.photos, videos: window.globalState.localRoomMedia.videos, ready: true } });
+        };
+        window.castVote = async (voteType, targetUid) => { await updateDoc(doc(db, getPublicPath('ppp_rooms'), window.globalState.currentRoomId), { [`votes.${targetUid}.${window.globalState.profile.uid}`]: voteType }); };
 
-        function renderPPPRoomUI(room) {
-            window.globalState.currentRoomData = room; const c = document.getElementById('ppp-dynamic-container'); const mU = window.globalState.profile.uid; const isH = room.hostId === mU; const isP = room.participants.some(p => p.uid === mU);
-            document.getElementById('room-players-list').innerHTML = room.participants.map(p => `<div class="flex items-center justify-between p-2 rounded-lg ${(room.leftParticipants||[]).includes(p.uid) ? 'opacity-50' : 'bg-osb-black'}"><div class="flex items-center gap-3"><img src="${p.photoURL}" class="w-10 h-10 rounded-full object-cover ${(room.leftParticipants||[]).includes(p.uid) ? 'grayscale' : ''}"><span class="font-bold text-sm ${(room.leftParticipants||[]).includes(p.uid) ? 'line-through text-osb-gray' : 'text-osb-white'}">${p.name}</span></div><span class="text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded-md ${(room.leftParticipants||[]).includes(p.uid) ? 'bg-osb-border text-osb-gray' : 'bg-osb-green/20 text-osb-green'}">${(room.leftParticipants||[]).includes(p.uid) ? 'Saiu' : 'Online'}</span></div>`).join('');
+        function updatePlayersList(room) {
+            const list = document.getElementById('room-players-list'); if(!list) return;
+            const leftUIDs = room.leftParticipants || [];
+            list.innerHTML = room.participants.map(p => {
+                const hasLeft = leftUIDs.includes(p.uid);
+                return `<div class="flex items-center justify-between p-2 rounded-lg ${hasLeft ? 'opacity-50' : 'bg-osb-black border border-osb-border'}"><div class="flex items-center gap-3"><img src="${p.photoURL}" class="w-10 h-10 rounded-full object-cover ${hasLeft ? 'grayscale' : ''}"><span class="font-bold text-sm ${hasLeft ? 'line-through text-osb-gray' : 'text-osb-white'}">${p.name}</span></div><span class="text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded-md ${hasLeft ? 'bg-osb-border text-osb-gray' : 'bg-osb-green/20 text-osb-green'}">${hasLeft ? 'Saiu' : 'Online'}</span></div>`;
+            }).join('');
+        }
+
+        window.renderPPPRoomUI = (room) => {
+            window.globalState.currentRoomData = room; updatePlayersList(room);
+            const container = document.getElementById('ppp-dynamic-container');
+            const myUid = window.globalState.profile.uid; const isHost = room.hostId === myUid; const isParticipant = room.participants.some(p => p.uid === myUid);
             
             if (room.status === 'waiting') {
                 clearInterval(window.globalState.pppTimerInterval); window.globalState.localRoomMedia = { photos: [], videos: [] };
-                let pHtml = room.participants.map(p => `<div class="flex flex-col items-center gap-2 w-16"><img src="${p.photoURL}" class="w-12 h-12 rounded-full border-2 border-osb-surface object-cover"><span class="text-[10px] font-bold text-osb-gray truncate w-full text-center">${p.name}</span></div>`).join('');
-                let aHtml = !isP ? `<button onclick="joinPPPRoom()" class="w-full btn-primary py-4 rounded-lg text-lg mb-4">Entrar na Roda</button>` : (isH ? `<button onclick="${room.participants.length >= 2 ? 'startPPPGame()' : ''}" class="w-full btn-primary py-4 rounded-lg text-lg ${room.participants.length < 2 ? 'opacity-50 pointer-events-none' : ''} mb-4">Iniciar Preparação</button>` : `<div class="card py-4 text-center border-dashed border-osb-border mb-4"><p class="text-sm font-bold text-osb-gray uppercase animate-pulse">Aguardando host...</p></div>`);
-                c.innerHTML = `<div class="card p-6 mb-6 flex-1 flex flex-col items-center justify-center text-center relative overflow-hidden border-osb-border min-h-[300px]"><h2 class="text-3xl font-black mb-2">Sala de Espera</h2><div class="w-full text-left flex-1 overflow-y-auto mt-6"><h3 class="font-bold text-xs text-osb-gray uppercase tracking-widest mb-4 border-b border-osb-border pb-2">Jogadores (${room.participants.length})</h3><div class="flex flex-wrap gap-4 justify-center md:justify-start pb-4">${pHtml}</div></div></div><div class="mt-auto shrink-0">${aHtml}</div>`;
+                let pHtml = room.participants.map(p => `<div class="flex flex-col items-center gap-2 w-16"><img src="${p.photoURL}" class="w-14 h-14 rounded-full border-[3px] border-osb-surface object-cover shadow-lg"><span class="text-[10px] font-bold text-osb-white truncate w-full text-center">${p.name}</span></div>`).join('');
+                let action = !isParticipant ? `<button onclick="joinPPPRoom()" class="w-full btn-primary py-4 rounded-lg text-lg mb-4 shadow-lg">Entrar na Roda</button>` : (isHost ? `<div class="mb-4"><button onclick="${room.participants.length >= 2 ? 'startPPPGame()' : ''}" class="w-full btn-primary py-4 rounded-lg text-lg shadow-lg ${room.participants.length < 2 ? 'opacity-50 pointer-events-none' : ''}">Iniciar Fase de Upload</button></div>` : `<div class="card py-4 text-center border-dashed border-osb-border mb-4"><p class="text-sm font-bold text-osb-gray uppercase animate-pulse">Aguardando host...</p></div>`);
+                container.innerHTML = `<div class="card p-6 mb-6 flex-1 flex flex-col items-center justify-center text-center relative overflow-hidden border-osb-border shadow-xl"><h2 class="text-3xl font-black mb-2">Sala de Espera</h2><p class="text-osb-gray text-sm mb-6 bg-osb-surface px-3 py-1 rounded-full">Código: <b class="text-osb-white">${room.id}</b></p><div class="w-full text-left flex-1 overflow-y-auto"><h3 class="font-bold text-xs text-osb-gray uppercase tracking-widest mb-4 border-b border-osb-border pb-2">Jogadores (${room.participants.length})</h3><div class="flex flex-wrap gap-4 justify-center pb-4">${pHtml}</div></div></div><div class="mt-auto shrink-0">${action}</div>`;
             } 
             else if (room.status === 'preparing') {
-                clearInterval(window.globalState.pppTimerInterval); const isR = room.media?.[mU]?.ready; const allR = room.participants.every(p => room.media?.[p.uid]?.ready);
-                if (allR && isH && !window.globalState.startingGameTimer) window.globalState.startingGameTimer = setTimeout(async () => { await updateDoc(doc(db, getPublicPath('ppp_rooms'), window.globalState.currentRoomId), { status: 'playing', timerStart: Date.now() }); window.globalState.startingGameTimer = null; }, 1500);
-                if (isR) { c.innerHTML = `<div class="card p-6 flex-1 flex flex-col items-center justify-center text-center"><i class="ph-fill ph-check-circle text-6xl text-osb-green mb-4"></i><h2 class="text-2xl font-black mb-2 uppercase">Pronto!</h2><p class="text-osb-gray text-sm animate-pulse mb-8">Aguardando os outros...</p></div>`; return; }
-                const ph = window.globalState.localRoomMedia.photos; const vd = window.globalState.localRoomMedia.videos;
-                let gH = ph.map((url, i) => `<div class="relative w-20 h-20 rounded-md overflow-hidden border border-osb-border group shrink-0"><img src="${url}" class="w-full h-full object-cover"><div class="absolute inset-0 bg-black/60 flex items-center justify-center cursor-pointer" onclick="removePPPMedia('photo', ${i})"><i class="ph-bold ph-trash text-osb-white text-xl"></i></div></div>`).join('') + vd.map((url, i) => `<div class="relative w-20 h-20 rounded-md overflow-hidden border border-osb-border bg-osb-black flex items-center justify-center shrink-0"><i class="ph-fill ph-video-camera text-2xl text-osb-white"></i><div class="absolute inset-0 bg-black/60 flex items-center justify-center cursor-pointer" onclick="removePPPMedia('video', ${i})"><i class="ph-bold ph-trash text-osb-white text-xl"></i></div></div>`).join('');
-                c.innerHTML = `<div class="card p-6 flex-1 flex flex-col mb-4 overflow-y-auto"><div class="text-center mb-6 shrink-0"><h2 class="text-2xl font-black uppercase">Seu Arsenal</h2><p class="text-osb-gray text-xs mt-1">Min: 1 Foto</p></div><div class="w-full flex-1 mb-6 flex flex-col"><div class="flex gap-2 w-full mb-4 shrink-0"><button onclick="document.getElementById('ppp-photo-input').click()" class="flex-1 py-4 rounded-lg text-sm border-2 border-osb-border text-osb-white hover:border-osb-green font-bold uppercase"><i class="ph-bold ph-image text-xl"></i> + Foto (${ph.length}/5)</button><button onclick="document.getElementById('ppp-video-input').click()" class="flex-1 py-4 rounded-lg text-sm border-2 border-osb-border text-osb-white hover:border-osb-green font-bold uppercase"><i class="ph-bold ph-video-camera text-xl"></i> + Vídeo (${vd.length}/2)</button></div><div class="flex flex-wrap gap-2 flex-1">${gH}</div><input type="file" id="ppp-photo-input" accept="image/*" class="hidden" onchange="uploadPPPMedia(event, 'photo')"><input type="file" id="ppp-video-input" accept="video/mp4,video/webm,video/ogg" class="hidden" onchange="uploadPPPMedia(event, 'video')"></div><button onclick="setPPPReady()" class="w-full btn-primary py-4 rounded-lg text-lg uppercase font-black shrink-0 ${ph.length < 1 ? 'opacity-50 pointer-events-none' : ''}">Estou Pronto</button></div>`;
+                clearInterval(window.globalState.pppTimerInterval);
+                const isReady = room.media?.[myUid]?.ready; const allReady = room.participants.every(p => room.media?.[p.uid]?.ready);
+                if (allReady && isHost && !window.globalState.startingGameTimer) {
+                    window.globalState.startingGameTimer = setTimeout(async () => { await updateDoc(doc(db, getPublicPath('ppp_rooms'), window.globalState.currentRoomId), { status: 'playing', timerStart: Date.now() }); window.globalState.startingGameTimer = null; }, 1500);
+                }
+                if (isReady) {
+                    container.innerHTML = `<div class="card p-6 flex-1 flex flex-col items-center justify-center text-center border-osb-border shadow-xl"><i class="ph-fill ph-check-circle text-6xl text-osb-green mb-4 shadow-[0_0_15px_rgba(30,215,96,0.5)] rounded-full"></i><h2 class="text-2xl font-black mb-2 uppercase">Você está pronto!</h2><p class="text-osb-gray text-sm animate-pulse mb-8">Aguardando lentos...</p><div class="flex flex-wrap justify-center gap-4">${room.participants.map(p => `<div class="flex flex-col items-center gap-2 opacity-${room.media?.[p.uid]?.ready ? '100' : '40'} transition-opacity"><div class="relative"><img src="${p.photoURL}" class="w-12 h-12 rounded-full border-[3px] border-${room.media?.[p.uid]?.ready ? 'osb-green' : 'osb-border'} object-cover"></div><span class="text-[10px] font-bold text-osb-gray truncate w-14 text-center">${p.name}</span></div>`).join('')}</div></div>`;
+                    return;
+                }
+                const photos = window.globalState.localRoomMedia.photos; const videos = window.globalState.localRoomMedia.videos;
+                let gHtml = photos.map((u,i) => `<div class="relative w-20 h-20 rounded-md overflow-hidden border border-osb-border group shrink-0 shadow-md"><img src="${u}" onclick="openFullScreen('${u}')" class="w-full h-full object-cover cursor-pointer"><div class="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer" onclick="removePPPMedia('photo', ${i})"><i class="ph-bold ph-trash text-osb-white text-xl"></i></div></div>`).join('') + videos.map((u,i) => `<div class="relative w-20 h-20 rounded-md overflow-hidden border border-osb-border group bg-osb-black flex items-center justify-center shrink-0 shadow-md"><video src="${u}" class="absolute inset-0 w-full h-full object-cover opacity-50 pointer-events-none"></video><i class="ph-fill ph-video-camera text-2xl text-osb-white z-10 pointer-events-none"></i><div class="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer z-20" onclick="removePPPMedia('video', ${i})"><i class="ph-bold ph-trash text-osb-white text-xl"></i></div></div>`).join('');
+                container.innerHTML = `<div class="card p-6 flex-1 flex flex-col mb-4 overflow-y-auto border-osb-border shadow-xl"><div class="text-center mb-6 shrink-0"><h2 class="text-2xl font-black uppercase">Prepare seu Arsenal</h2><p class="text-osb-gray text-xs mt-1 bg-osb-surface inline-block px-3 py-1 rounded-full">Obrigatório: 1 Foto</p></div><div class="w-full flex-1 mb-6 flex flex-col"><div class="flex gap-3 w-full mb-6 shrink-0"><button onclick="document.getElementById('ppp-photo-input').click()" class="flex-1 py-4 rounded-xl text-xs sm:text-sm border-2 border-osb-border bg-osb-surface hover:border-osb-green text-osb-white font-bold uppercase transition-all shadow-md flex items-center justify-center gap-2"><i class="ph-bold ph-image text-lg"></i> Foto (${photos.length}/5)</button><button onclick="document.getElementById('ppp-video-input').click()" class="flex-1 py-4 rounded-xl text-xs sm:text-sm border-2 border-osb-border bg-osb-surface hover:border-osb-green text-osb-white font-bold uppercase transition-all shadow-md flex items-center justify-center gap-2"><i class="ph-bold ph-video-camera text-lg"></i> Vídeo (${videos.length}/2)</button></div><div class="flex flex-wrap gap-3 flex-1 items-start content-start">${gHtml}</div><input type="file" id="ppp-photo-input" accept="image/*" class="hidden" onchange="uploadPPPMedia(event, 'photo')"><input type="file" id="ppp-video-input" accept="video/mp4,video/webm,video/ogg" class="hidden" onchange="uploadPPPMedia(event, 'video')"></div><button onclick="setPPPReady()" class="w-full btn-primary py-4 rounded-lg text-lg uppercase font-black shrink-0 shadow-lg ${photos.length < 1 ? 'opacity-50 pointer-events-none' : ''}">Estou Pronto <i class="ph-bold ph-check"></i></button></div>`;
             }
             else if (room.status === 'playing') {
-                const tg = room.participants[room.currentIndex]; const isM = tg.uid === mU; const mV = room.votes?.[tg.uid]?.[mU]; const tM = room.media?.[tg.uid] || { photos: [tg.photoURL], videos: [] };
-                clearInterval(window.globalState.pppTimerInterval); let tL = Math.max(0, room.timeLimit - Math.floor((Date.now() - room.timerStart) / 1000));
-                const aP = room.participants.filter(p => !(room.leftParticipants || []).includes(p.uid)); const eV = !(room.leftParticipants || []).includes(tg.uid) ? aP.length - 1 : aP.length;
-                if (eV > 0 && Object.keys(room.votes?.[tg.uid] || {}).length >= eV) tL = 0;
-                const cN = async () => { if (isH && tL <= 0) await updateDoc(doc(db, getPublicPath('ppp_rooms'), window.globalState.currentRoomId), room.currentIndex + 1 >= room.participants.length ? { status: 'finished' } : { currentIndex: room.currentIndex + 1, timerStart: Date.now() }); };
-                let vC = isM ? `<div class="card p-6 text-center border-dashed border-osb-border"><p class="font-bold text-osb-gray uppercase">Aguarde...</p></div>` : (mV ? `<div class="card p-6 text-center border-2 border-osb-green text-osb-green"><p class="text-xs uppercase mb-2 opacity-80">Computado</p><span class="text-3xl font-black uppercase">${mV}</span></div>` : `<div class="grid grid-cols-3 gap-3"><button onclick="castVote('pega', '${tg.uid}')" class="py-6 rounded-lg font-black text-lg border-2 border-osb-green text-osb-green hover:bg-osb-green hover:text-osb-black transition-colors">PEGA</button><button onclick="castVote('pensa', '${tg.uid}')" class="py-6 rounded-lg font-black text-lg border-2 border-osb-white text-osb-white hover:bg-osb-white hover:text-osb-black transition-colors">PENSA</button><button onclick="castVote('passa', '${tg.uid}')" class="py-6 rounded-lg font-black text-lg border-2 border-osb-border bg-osb-surface text-osb-white hover:border-osb-white transition-colors">PASSA</button></div>`);
-                let mS = tM.photos.map(u => `<img src="${u}" onclick="openFullScreen('${u}')" class="snap-center w-full max-h-[40vh] object-contain rounded-lg shrink-0 bg-osb-surface border border-osb-border cursor-pointer">`).join('') + tM.videos.map(u => `<video src="${u}" controls playsinline preload="metadata" class="snap-center w-full max-h-[40vh] object-contain rounded-lg shrink-0 bg-osb-surface border border-osb-border"></video>`).join('');
+                const target = room.participants[room.currentIndex]; const isMe = target.uid === myUid; const myVote = room.votes?.[target.uid]?.[myUid];
+                const tMedia = room.media?.[target.uid] || { photos: [target.photoURL], videos: [] };
+                clearInterval(window.globalState.pppTimerInterval);
+                let localTimeLeft = Math.max(0, room.timeLimit - Math.floor((Date.now() - room.timerStart) / 1000));
+                const activeP = room.participants.filter(p => !(room.leftParticipants || []).includes(p.uid));
+                const expectedVotes = !(room.leftParticipants || []).includes(target.uid) ? activeP.length - 1 : activeP.length;
+                if (expectedVotes > 0 && Object.keys(room.votes?.[target.uid] || {}).length >= expectedVotes) localTimeLeft = 0;
                 
-                c.innerHTML = `
-                    <div class="flex justify-between items-end mb-4 border-b border-osb-border pb-2 shrink-0">
-                        <div><p class="text-[10px] font-bold text-osb-gray uppercase tracking-widest">Rodada ${room.currentIndex + 1}/${room.participants.length}</p><div class="flex items-center gap-2 mt-1"><img src="${tg.photoURL}" class="w-6 h-6 rounded-full object-cover"><h3 class="text-xl font-black uppercase truncate max-w-[150px]">${tg.name}</h3></div></div>
-                        <div class="text-right"><span id="ppp-timer-text" class="text-4xl font-black text-osb-white tracking-tighter">00:${tL.toString().padStart(2, '0')}</span></div>
+                const checkNext = async () => { if (isHost && localTimeLeft <= 0) { const nextIdx = room.currentIndex + 1; await updateDoc(doc(db, getPublicPath('ppp_rooms'), window.globalState.currentRoomId), nextIdx >= room.participants.length ? { status: 'finished' } : { currentIndex: nextIdx, timerStart: Date.now() }); } };
+                
+                let vControls = isMe ? `<div class="card p-6 text-center border-dashed border-osb-border bg-osb-surface/50"><p class="font-bold text-osb-gray uppercase tracking-widest"><i class="ph-bold ph-eye mr-2"></i> Estão te julgando...</p></div>` : (myVote ? `<div class="card p-6 text-center border-2 ${myVote==='pega'?'border-osb-green text-osb-green shadow-[0_0_15px_rgba(30,215,96,0.2)]':(myVote==='passa'?'border-osb-border text-osb-white':'border-osb-white text-osb-white shadow-[0_0_15px_rgba(255,255,255,0.2)]')}"><p class="text-xs uppercase mb-2 opacity-80 tracking-widest">Voto Registrado</p><span class="text-3xl font-black uppercase">${myVote}</span></div>` : `<div class="grid grid-cols-3 gap-3"><button onclick="castVote('pega','${target.uid}')" class="py-5 sm:py-6 rounded-xl font-black text-sm sm:text-lg border-2 border-osb-green text-osb-green hover:bg-osb-green hover:text-osb-black transition-colors shadow-lg">PEGA</button><button onclick="castVote('pensa','${target.uid}')" class="py-5 sm:py-6 rounded-xl font-black text-sm sm:text-lg border-2 border-osb-white text-osb-white hover:bg-osb-white hover:text-osb-black transition-colors shadow-lg">PENSA</button><button onclick="castVote('passa','${target.uid}')" class="py-5 sm:py-6 rounded-xl font-black text-sm sm:text-lg border-2 border-osb-border bg-osb-surface text-osb-white hover:border-osb-white transition-colors shadow-lg">PASSA</button></div>`);
+                
+                let sHtml = tMedia.photos.map(u => `<img src="${u}" onclick="openFullScreen('${u}')" class="snap-center w-full max-h-[45vh] object-contain rounded-xl shrink-0 bg-osb-black border border-osb-border cursor-pointer shadow-md">`).join('') + tMedia.videos.map(u => `<video src="${u}" controls playsinline preload="metadata" class="snap-center w-full max-h-[45vh] object-contain rounded-xl shrink-0 bg-osb-black border border-osb-border shadow-md"></video>`).join('');
+
+                container.innerHTML = `
+                    <div class="flex justify-between items-end mb-4 bg-osb-surface p-3 rounded-xl border border-osb-border shadow-md shrink-0">
+                        <div>
+                            <p class="text-[10px] font-black text-osb-gray uppercase tracking-widest bg-osb-black px-2 py-0.5 rounded-full inline-block">Rodada ${room.currentIndex + 1}/${room.participants.length}</p>
+                            <div class="flex items-center gap-3 mt-2">
+                                <img src="${target.photoURL}" class="w-8 h-8 rounded-full object-cover border border-osb-border">
+                                <h3 class="text-xl font-black uppercase truncate">${target.name}</h3>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <span id="ppp-timer-text" class="text-4xl font-black ${localTimeLeft <= 5 ? 'text-osb-red animate-pulse' : 'text-osb-white'}">00:${localTimeLeft.toString().padStart(2, '0')}</span>
+                        </div>
                     </div>
-                    <div class="relative w-full flex items-center group mb-4">
-                        ${(tM.photos.length + tM.videos.length > 1) ? `<button onclick="scrollPPP(-1)" class="absolute left-2 z-10 bg-black/80 p-2 rounded-full text-osb-white hover:text-osb-green shadow-lg"><i class="ph-bold ph-caret-left text-xl"></i></button>` : ''}
-                        <div id="ppp-media-scroll" class="flex-1 flex w-full overflow-x-auto snap-x snap-mandatory gap-4 pb-2 hide-scrollbar">${mS}</div>
-                        ${(tM.photos.length + tM.videos.length > 1) ? `<button onclick="scrollPPP(1)" class="absolute right-2 z-10 bg-black/80 p-2 rounded-full text-osb-white hover:text-osb-green shadow-lg"><i class="ph-bold ph-caret-right text-xl"></i></button>` : ''}
+                    <div class="relative w-full flex-1 min-h-0 mb-4 bg-osb-surface rounded-xl border border-osb-border shadow-inner p-2 flex items-center justify-center overflow-hidden">
+                        <!-- Swiper Controls -->
+                        ${(tMedia.photos.length + tMedia.videos.length) > 1 ? `
+                            <button onclick="scrollPPP(-1)" class="absolute left-2 z-10 bg-black/60 text-white p-2 rounded-full hover:bg-osb-green transition-colors shadow-lg"><i class="ph-bold ph-caret-left text-2xl pointer-events-none"></i></button>
+                            <button onclick="scrollPPP(1)" class="absolute right-2 z-10 bg-black/60 text-white p-2 rounded-full hover:bg-osb-green transition-colors shadow-lg"><i class="ph-bold ph-caret-right text-2xl pointer-events-none"></i></button>
+                        ` : ''}
+                        <div id="ppp-media-scroll" class="w-full h-full flex overflow-x-auto snap-x snap-mandatory gap-4 hide-scrollbar items-center">
+                            ${sHtml}
+                        </div>
                     </div>
-                    <div class="w-full h-1 bg-osb-surface mb-6 rounded-full overflow-hidden shrink-0"><div id="ppp-progress-bar" class="h-full bg-osb-green transition-all duration-1000 ease-linear" style="width: ${(tL / room.timeLimit) * 100}%"></div></div>
-                    <div id="vote-buttons-area" class="mt-auto shrink-0">${vC}</div>
+                    <div class="w-full h-1.5 bg-osb-surface mb-6 rounded-full overflow-hidden shrink-0 border border-osb-border">
+                        <div id="ppp-progress-bar" class="h-full bg-osb-green transition-all" style="width: ${(localTimeLeft / room.timeLimit) * 100}%"></div>
+                    </div>
+                    <div id="vote-buttons-area" class="mt-auto shrink-0">${vControls}</div>
                 `;
-                window.globalState.pppTimerInterval = setInterval(() => { tL--; if (tL < 0) { clearInterval(window.globalState.pppTimerInterval); cN(); return; } const tT = document.getElementById('ppp-timer-text'); const pB = document.getElementById('ppp-progress-bar'); if (tT) tT.innerText = `00:${tL.toString().padStart(2, '0')}`; if (pB) pB.style.width = `${(tL / room.timeLimit) * 100}%`; }, 1000);
+                window.globalState.pppTimerInterval = setInterval(() => { localTimeLeft--; if (localTimeLeft < 0) { clearInterval(window.globalState.pppTimerInterval); checkNext(); return; } const t = document.getElementById('ppp-timer-text'), p = document.getElementById('ppp-progress-bar'); if(t) { t.innerText = `00:${localTimeLeft.toString().padStart(2, '0')}`; if(localTimeLeft <= 5) t.classList.add('text-osb-red', 'animate-pulse'); } if(p) p.style.width = `${(localTimeLeft / room.timeLimit) * 100}%`; }, 1000);
             }
             else if (room.status === 'finished') {
                 clearInterval(window.globalState.pppTimerInterval);
-                const rH = room.participants.map(p => { const v = room.votes?.[p.uid] || {}; return `<div class="card p-4 flex items-center justify-between mb-3 border-osb-border shrink-0"><div class="flex items-center gap-3"><img src="${p.photoURL}" class="w-12 h-12 rounded-full grayscale object-cover"><h3 class="font-bold uppercase">${p.name}</h3></div><div class="text-right text-xs font-bold font-mono grid grid-cols-3 gap-3"><div class="flex flex-col"><span class="text-osb-green">PEG</span><span class="text-lg">${Object.values(v).filter(x=>x==='pega').length}</span></div><div class="flex flex-col"><span class="text-osb-white">PEN</span><span class="text-lg">${Object.values(v).filter(x=>x==='pensa').length}</span></div><div class="flex flex-col"><span class="text-osb-gray">PAS</span><span class="text-lg">${Object.values(v).filter(x=>x==='passa').length}</span></div></div></div>`; }).join('');
-                c.innerHTML = `<div class="text-center mb-6 pt-4 shrink-0"><h2 class="text-4xl font-black uppercase tracking-tighter">Fim de Jogo</h2></div><div class="flex-1 overflow-y-auto pb-4 px-1">${rH}</div>${isH ? `<button onclick="restartPPPRoom()" class="w-full btn-primary py-4 rounded-lg text-lg font-black uppercase tracking-widest mt-4 shrink-0 mb-2">Jogar Novamente</button>` : ''}<button onclick="leavePPPRoom()" class="w-full btn-outline py-4 rounded-lg text-lg uppercase tracking-widest ${isH ? 'mt-2' : 'mt-4'} shrink-0 mb-4">Sair da Sala</button>`;
+                let rHtml = room.participants.map(p => {
+                    const v = room.votes?.[p.uid] || {}; const g = Object.values(v).filter(x=>x==='pega').length; const pn = Object.values(v).filter(x=>x==='pensa').length; const ps = Object.values(v).filter(x=>x==='passa').length;
+                    return `<div class="card p-4 flex items-center justify-between mb-3 border-osb-border shadow-md bg-osb-surface"><div class="flex items-center gap-3"><img src="${p.photoURL}" class="w-12 h-12 rounded-full border border-osb-border object-cover"><h3 class="font-bold uppercase text-sm">${p.name}</h3></div><div class="text-right text-xs font-bold font-mono grid grid-cols-3 gap-3 bg-osb-black py-2 px-3 rounded-lg border border-osb-border"><div class="flex flex-col items-center"><span class="text-[10px] text-osb-green tracking-widest">PEG</span><span class="text-lg">${g}</span></div><div class="flex flex-col items-center"><span class="text-[10px] text-osb-white tracking-widest">PEN</span><span class="text-lg">${pn}</span></div><div class="flex flex-col items-center"><span class="text-[10px] text-osb-gray tracking-widest">PAS</span><span class="text-lg">${ps}</span></div></div></div>`;
+                }).join('');
+                container.innerHTML = `<div class="text-center mb-6 pt-4 shrink-0"><h2 class="text-4xl font-black uppercase text-osb-green" style="text-shadow: 2px 2px 0 #000;">Fim de Jogo</h2><p class="text-osb-gray text-xs uppercase tracking-widest mt-2">Resultados Oficiais</p></div><div class="flex-1 overflow-y-auto pb-4 hide-scrollbar">${rHtml}</div>${isHost ? `<button onclick="restartPPPRoom()" class="w-full btn-primary py-4 rounded-lg text-lg font-black uppercase mt-4 shrink-0 mb-2 shadow-lg">Jogar Novamente</button>` : ''}<button onclick="leavePPPRoom()" class="w-full btn-outline py-4 rounded-lg text-lg uppercase shrink-0 mb-4 bg-osb-black">Sair da Sala</button>`;
             }
-        }
+        };
 
         initAuth();
     </script>
